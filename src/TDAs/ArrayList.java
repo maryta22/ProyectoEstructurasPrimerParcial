@@ -37,8 +37,6 @@ public class ArrayList<E> implements List<E> {
         } catch (ArrayIndexOutOfBoundsException excepcion) {
             addCapacity();
             moverDerecha(n,limite);
-            System.out.println("f");
-
         }
         
     }
