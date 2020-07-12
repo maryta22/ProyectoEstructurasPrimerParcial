@@ -30,15 +30,14 @@ public class ArrayList<E> implements List<E> {
     /*mueve todos los elementos un espacio a la derecha.*/
     private void moverDerecha(int n, int limite) {
         try {
-            for (int i = n; i >= limite; i--) {
+            for (int i = limite; i >= n; i--) {
                 elementos[i + 1] = elementos[i];
             }
             ocupados++;
         } catch (ArrayIndexOutOfBoundsException excepcion) {
             addCapacity();
-            for (int i = n; i >= limite; i--) {
-                elementos[i + 1] = elementos[i];
-            }
+            moverDerecha(n,limite);
+            System.out.println("f");
 
         }
         
@@ -197,16 +196,11 @@ public class ArrayList<E> implements List<E> {
             throw new IndexOutOfBoundsException();
         } else if (element == null) {
             throw new IllegalArgumentException();
-        } else if (isFull()) {
-            addCapacity();
-            elementos[index] = element;
-            ocupados++;
         } else if (isEmpty()) {
             addFirst(element);
         } else {
             moverDerecha(ocupados - 1, index);
             elementos[index] = element;
-            ocupados++;
         }
     }
 

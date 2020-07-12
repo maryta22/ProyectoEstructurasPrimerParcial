@@ -124,7 +124,8 @@ public class Interfaz extends Application {
         ArrayList<Silla> sillas = movimientoSillas.getSillas();
         LinkedList<Persona> personas = movimientoPersonas.getPersonas();
         
-        System.out.println("logrado");
+        System.out.println(sillas.size());
+        System.out.println(personas.size());
 
     }
 
