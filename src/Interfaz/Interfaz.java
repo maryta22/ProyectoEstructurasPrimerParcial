@@ -6,6 +6,7 @@ import Objetos.Persona;
 import Objetos.Silla;
 import TDAs.ArrayList;
 import TDAs.LinkedList;
+import java.util.Iterator;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -118,15 +119,26 @@ public class Interfaz extends Application {
     }
 
     public void rellenarPanelIzquierdo() {
-        movimientoSillas.rellenarLista(numeroDePersonas-1);
+        movimientoSillas.rellenarLista(numeroDePersonas - 1);
         movimientoPersonas.rellenarLista(numeroDePersonas);
-        
+
         ArrayList<Silla> sillas = movimientoSillas.getSillas();
         LinkedList<Persona> personas = movimientoPersonas.getPersonas();
         
+        personas.add(0, new Persona("MARIA"));
+        personas.add(0, new Persona("MffdsA"));
+        personas.add(0, new Persona("adsIA"));
+        personas.add(0, new Persona("MertA"));
+        personas.add(0, new Persona("MfgvcIA"));
+        
+        Iterator it = personas.iterador();
+        while(it.hasNext()){
+            System.out.println("hola");
+        }
+
         System.out.println(sillas.size());
         System.out.println(personas.size());
-
+        
     }
 
     public void actualizarDatos(Button boton) {

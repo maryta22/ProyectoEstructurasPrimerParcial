@@ -2,6 +2,8 @@
 package Main;
 
 import Interfaz.Interfaz;
+import TDAs.LinkedList;
+import java.util.Iterator;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

@@ -1,5 +1,7 @@
 package TDAs;
 
+import java.util.Iterator;
+
 public class LinkedList<E> implements List<E> {
 
     private NodeList<E> header;
@@ -34,6 +36,7 @@ public class LinkedList<E> implements List<E> {
             if (isEmpty()) {
                 setHeader(nuevo);
                 setLast(nuevo);
+                nuevo.setNext(null);
             } else {
                 nuevo.setNext(header);
                 setHeader(nuevo);
@@ -51,6 +54,7 @@ public class LinkedList<E> implements List<E> {
             if (isEmpty()) {
                 setHeader(nuevo);
                 setLast(nuevo);
+                nuevo.setNext(null);
             } else {
                 last.setNext(nuevo);
                 setLast(nuevo);
@@ -69,7 +73,7 @@ public class LinkedList<E> implements List<E> {
             NodeList<E> primero = header;
             if (header.getNext() != null) {
                 header.setContent(null);
-                setHeader(header.getNext());               
+                setHeader(header.getNext());
             } else {
                 header = null;
                 last = null;
@@ -105,8 +109,10 @@ public class LinkedList<E> implements List<E> {
     public int size() {
         int contador = 0;
         NodeList<E> n;
-        for (n = header; n != null; n = n.getNext()) {
-            contador++;
+        if (header != null) {
+            for (n = header; n != null; n = n.getNext()) {
+                contador++;
+            }
         }
         return contador;
     }
@@ -126,7 +132,7 @@ public class LinkedList<E> implements List<E> {
     public NodeList<E> buscarNodo(int index) {
         int contador = 0;
         NodeList<E> n;
-        for (n = header; contador <= index ; n = n.getNext()) {
+        for (n = header; contador <= index; n = n.getNext()) {
             if (contador == index) {
                 return n;
             }
@@ -139,14 +145,14 @@ public class LinkedList<E> implements List<E> {
     public void add(int index, E element) throws IllegalArgumentException, IndexOutOfBoundsException {
         if (element != null) {
             if (index <= size()) {
-                if (index == size()) {
-                    addLast(element);
-                } else if (index == 0) {
+                if (index == 0) {
                     addFirst(element);
+                } else if (index == size()) {
+                    addLast(element);
                 } else {
-                    NodeList<E> nuevo = new NodeList(element); 
+                    NodeList<E> nuevo = new NodeList(element);
                     nuevo.setNext(buscarNodo(index));
-                    buscarNodo(index - 1).setNext(nuevo);     
+                    buscarNodo(index - 1).setNext(nuevo);
                 }
             } else {
                 throw new IndexOutOfBoundsException();
@@ -185,7 +191,7 @@ public class LinkedList<E> implements List<E> {
             if (index < size()) {
                 if (index == size() - 1) {
                     E reemplazado = last.getContent();
-                    last.setContent(element);  
+                    last.setContent(element);
                     return reemplazado;
                 } else if (index == 0) {
                     E reemplazado = header.getContent();
@@ -193,7 +199,7 @@ public class LinkedList<E> implements List<E> {
                     return reemplazado;
                 } else {
                     E reemplazado = buscarNodo(index).getContent();
-                    buscarNodo(index).setContent(element);  
+                    buscarNodo(index).setContent(element);
                     return reemplazado;
                 }
             } else {
@@ -206,12 +212,50 @@ public class LinkedList<E> implements List<E> {
 
     @Override
     public String toString() {
+
         String result = "";
         NodeList<E> n;
         for (n = header; n != null; n = n.getNext()) {
             result += n.getContent().toString() + ",";
         }
         return result;
+    }
+
+    @Override
+    public Iterator<E> iterador() {
+
+        Iterator<E> iterator = new Iterator<E>() {
+
+            NodeList<E> n = header;
+            boolean condicion = true;
+
+            @Override
+            public boolean hasNext() {
+                while (condicion) {
+                    if (header != null) {
+                        if (n.getNext() != null) {
+                            return true;
+                        }else{
+                            condicion = false;
+                            return true;
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public E next() {
+                E contenido = n.getContent();
+                n = n.getNext();
+                return contenido;
+            }
+
+        };
+
+        return iterator;
     }
 
 }

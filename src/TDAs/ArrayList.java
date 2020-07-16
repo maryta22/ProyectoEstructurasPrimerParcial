@@ -1,5 +1,7 @@
 package TDAs;
 
+import java.util.Iterator;
+
 public class ArrayList<E> implements List<E> {
 
     //arreglo de elementos
@@ -209,6 +211,29 @@ public class ArrayList<E> implements List<E> {
             result += elementos[i].toString() + ",";
         }
         return result;
+    }
+
+    @Override
+    public Iterator<E> iterador() {
+        Iterator<E> iterator = new Iterator<E>() {
+            
+            int contador = 0;
+            
+            @Override
+            public boolean hasNext() {
+                return contador < ocupados;
+            }
+
+            @Override
+            public E next() {
+                E elemento = elementos[contador];
+                contador++;
+                return elemento;
+            }
+            
+        };
+        
+        return iterator; 
     }
 
 }
