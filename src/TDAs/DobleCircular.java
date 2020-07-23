@@ -278,4 +278,29 @@ public class DobleCircular<E> implements List<E>{
         return it;
     }
     
+    @Override
+    public String toString(){
+        StringBuilder sb=new StringBuilder();
+        int cont=0;
+        for(Node<E> n=last.getNext(); cont<efectivo;n=n.getNext()){
+            if(n==last.getNext() && n==last){
+                sb.append("[");
+                sb.append(last.getNext().getData());
+                sb.append("]");
+            }else if(n==last.getNext()){
+                sb.append("[");
+                sb.append(last.getNext().getData());
+                sb.append(",");
+            }else if(n==last){
+                sb.append(last.getData());
+                sb.append("]");
+            }else{
+                sb.append(n.getData());
+                sb.append(",");
+            }
+            cont++;
+        }
+        return sb.toString();
+    }
+    
 }
