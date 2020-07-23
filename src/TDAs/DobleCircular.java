@@ -224,7 +224,7 @@ public class DobleCircular<E> implements List<E>{
     @Override
     public E set(int index, E element) {
         int cont=0;
-        if(element==null || (index >= efectivo || index < 0)){
+        if(element==null || index >= efectivo || index < 0){
             return null;
         } else if(index== efectivo-1){
             E cambiado= last.getData();
@@ -238,6 +238,7 @@ public class DobleCircular<E> implements List<E>{
                 n.setData(element);
                 return cambiado;
             }
+            cont++;
         }
         return null;
     }
