@@ -2,14 +2,15 @@
 package Movimientos;
 
 import Objetos.Persona;
+import TDAs.DobleCircular;
 import TDAs.LinkedList;
 
 
 public class MovimientoPersonas {
-    private LinkedList<Persona> personas;
+    private DobleCircular<Persona> personas;
 
     public MovimientoPersonas() {
-        personas = new LinkedList<>();
+        personas = new DobleCircular<>();
     }
     
     public void rellenarLista(int numero){
@@ -18,11 +19,11 @@ public class MovimientoPersonas {
         }
     }
    
-    public LinkedList<Persona> getPersonas() {
+    public DobleCircular<Persona> getPersonas() {
         return personas;
     }
 
-    public void setPersonas(LinkedList<Persona> personas) {
+    public void setPersonas(DobleCircular<Persona> personas) {
         this.personas = personas;
     }
     

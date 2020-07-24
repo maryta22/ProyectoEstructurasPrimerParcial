@@ -5,6 +5,7 @@ import Movimientos.MovimientoSillas;
 import Objetos.Persona;
 import Objetos.Silla;
 import TDAs.ArrayList;
+import TDAs.DobleCircular;
 import TDAs.LinkedList;
 import java.util.Iterator;
 import javafx.application.Application;
@@ -123,7 +124,7 @@ public class Interfaz extends Application {
         movimientoPersonas.rellenarLista(numeroDePersonas);
 
         ArrayList<Silla> sillas = movimientoSillas.getSillas();
-        LinkedList<Persona> personas = movimientoPersonas.getPersonas();
+        DobleCircular<Persona> personas = movimientoPersonas.getPersonas();
         
         personas.add(0, new Persona("MARIA"));
         personas.add(0, new Persona("MffdsA"));
@@ -132,10 +133,7 @@ public class Interfaz extends Application {
         personas.add(0, new Persona("MfgvcIA"));
         
         Iterator it = personas.iterador();
-        while(it.hasNext()){
-            System.out.println("hola");
-        }
-
+        
         System.out.println(sillas.size());
         System.out.println(personas.size());
         
