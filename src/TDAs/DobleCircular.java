@@ -11,14 +11,14 @@ import java.util.Iterator;
  *
  * @author Deja mi lapto ¬¬...!
  */
-public class DobleCircular<E> implements List<E>{
-    
+public class DobleCircular<E> implements List<E> {
+
     private Node<E> last;
     private int efectivo;
 
-    public DobleCircular(){
-        this.last=null;
-        this.efectivo=0;
+    public DobleCircular() {
+        this.last = null;
+        this.efectivo = 0;
     }
 
     public Node<E> getLast() {
@@ -78,22 +78,22 @@ public class DobleCircular<E> implements List<E>{
     public E removeFirst() {
         if (this.isEmpty()) {
             return null;
-        } else if (last== last.getNext()) { // En caso que haya un solo nodo
-            E eliminado= last.getData();
+        } else if (last == last.getNext()) { // En caso que haya un solo nodo
+            E eliminado = last.getData();
             last.setData(null);
             last = null;  //Segun yo con eso todo se hace null, no creo que sea necesario setear next, previous con null
             efectivo--;
             return eliminado;
         } else {
-            E eliminado= last.getNext().getData();
+            E eliminado = last.getNext().getData();
             Node<E> temp = last.getNext().getNext(); //Obtengo el siguiente del "primero"
             last.getNext().setData(null);
             last.getNext().setNext(null);
             last.getNext().setPrevious(null);
-            
+
             last.setNext(temp);
             temp.setPrevious(last);
-            
+
             this.efectivo--;
             return eliminado;
         }
@@ -104,24 +104,24 @@ public class DobleCircular<E> implements List<E>{
         if (this.isEmpty()) {
             return null;
 
-        } else if (last.getNext()==last) { //En caso que haya un solo nodo
-            E eliminado= last.getData();
+        } else if (last.getNext() == last) { //En caso que haya un solo nodo
+            E eliminado = last.getData();
             last.setData(null);
-            last=null; //Segun yo con eso todo se hace null, no creo que sea necesario setear next, previous con null
+            last = null; //Segun yo con eso todo se hace null, no creo que sea necesario setear next, previous con null
             this.efectivo--;
             return eliminado;
         } else {
             E eliminado = last.getData();
-            Node<E> previo = last.getPrevious();           
-            
+            Node<E> previo = last.getPrevious();
+
             previo.setNext(last.getNext());
             last.getNext().setPrevious(previo);
-            
+
             last.setPrevious(null);
             last.setNext(null);
-            
+
             setLast(previo);
-            
+
             this.efectivo--;
             return eliminado;
         }
@@ -134,7 +134,7 @@ public class DobleCircular<E> implements List<E>{
 
     @Override
     public boolean isEmpty() {
-        return efectivo==0;
+        return efectivo == 0;
     }
 
     @Override
@@ -144,16 +144,16 @@ public class DobleCircular<E> implements List<E>{
 
     @Override
     public void add(int index, E element) {
-        int cont=1;
-        if(element==null){
+        int cont = 1;
+        if (element == null) {
             return;
-        }else if(index==efectivo){
-            addLast(element); 
+        } else if (index == efectivo) {
+            addLast(element);
             return;
-        }else if(index==0){
+        } else if (index == 0) {
             addFirst(element);
             return;
-        } 
+        }
         //Node<E> first= last.getNext();
         for (Node<E> n = last.getNext().getNext(); n != last.getNext(); n = n.getNext()) {
             if (cont == index) {
@@ -178,20 +178,20 @@ public class DobleCircular<E> implements List<E>{
             return null;
         } else if (index == 0) {
             return removeFirst();
-        } 
+        }
         Node<E> first = last.getNext();
         for (Node<E> n = first.getNext(); n != last.getNext(); n = n.getNext()) {
-            if(cont==index){
-                E eliminado= n.getData();
-                if(n==first){
+            if (cont == index) {
+                E eliminado = n.getData();
+                if (n == first) {
                     this.removeFirst();
                     return eliminado;
-                }else if(n==first.getPrevious()){
+                } else if (n == first.getPrevious()) {
                     this.removeLast();
                     return eliminado;
-                }else{
-                    Node<E> prev=n.getPrevious();
-                    Node<E> after=n.getNext();
+                } else {
+                    Node<E> prev = n.getPrevious();
+                    Node<E> after = n.getNext();
                     n.setData(null);
                     n.setNext(null);
                     n.setPrevious(null);
@@ -199,7 +199,7 @@ public class DobleCircular<E> implements List<E>{
                     prev.setNext(after);
                     efectivo--;
                     return eliminado;
-                 }
+                }
             }
             cont++;
         }
@@ -208,17 +208,17 @@ public class DobleCircular<E> implements List<E>{
 
     @Override
     public E get(int index) {
-        int cont=1;
-        if(index>=efectivo || index<0){
+        int cont = 1;
+        if (index >= efectivo || index < 0) {
             return null;
-        }else if(index==0){
+        } else if (index == 0) {
             return last.getNext().getData();
-        }else if(index==efectivo-1){
+        } else if (index == efectivo - 1) {
             return last.getData();
         }
-        Node<E> first= last.getNext();
-        for(Node<E> n=first.getNext(); n!=last; n=n.getNext()){
-            if(cont==index){
+        Node<E> first = last.getNext();
+        for (Node<E> n = first.getNext(); n != last; n = n.getNext()) {
+            if (cont == index) {
                 return n.getData();
             }
             cont++;
@@ -228,18 +228,18 @@ public class DobleCircular<E> implements List<E>{
 
     @Override
     public E set(int index, E element) {
-        int cont=0;
-        if(element==null || index >= efectivo || index < 0){
+        int cont = 0;
+        if (element == null || index >= efectivo || index < 0) {
             return null;
-        } else if(index== efectivo-1){
-            E cambiado= last.getData();
+        } else if (index == efectivo - 1) {
+            E cambiado = last.getData();
             last.setData(element);
             return cambiado;
         }
-        
-        for(Node<E> n=last.getNext(); n!=last; n= n.getNext()){
-            if(cont==index){
-                E cambiado= n.getData();
+
+        for (Node<E> n = last.getNext(); n != last; n = n.getNext()) {
+            if (cont == index) {
+                E cambiado = n.getData();
                 n.setData(element);
                 return cambiado;
             }
@@ -252,9 +252,9 @@ public class DobleCircular<E> implements List<E>{
     public Iterator<E> iterador() {
         Iterator<E> it = new Iterator<E>() {
             private int contador = 0;
-            private int contReverso= efectivo-1;
+            private int contReverso = efectivo - 1;
             private Node<E> n = last.getNext(); //first
-            private Node<E> p= last; 
+            private Node<E> p = last;
 
             @Override
             public boolean hasNext() {
@@ -265,17 +265,17 @@ public class DobleCircular<E> implements List<E>{
             public E next() {
                 E dato = n.getData();
                 n = n.getNext();
-                contador++;
+                    contador++;
                 return dato;
             }
-            
-            public boolean hasPrevious(){
-                return contReverso!= -1;
+
+            public boolean hasPrevious() {
+                return contReverso != -1;
             }
-            
-            public E previous(){
-                E dato =p.getData();
-                p=p.getPrevious();
+
+            public E previous() {
+                E dato = p.getData();
+                p = p.getPrevious();
                 contReverso--;
                 return dato;
             }
@@ -283,24 +283,24 @@ public class DobleCircular<E> implements List<E>{
         };
         return it;
     }
-    
+
     @Override
-    public String toString(){
-        StringBuilder sb=new StringBuilder();
-        int cont=0;
-        for(Node<E> n=last.getNext(); cont<efectivo;n=n.getNext()){
-            if(n==last.getNext() && n==last){
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        int cont = 0;
+        for (Node<E> n = last.getNext(); cont < efectivo; n = n.getNext()) {
+            if (n == last.getNext() && n == last) {
                 sb.append("[");
                 sb.append(last.getNext().getData());
                 sb.append("]");
-            }else if(n==last.getNext()){
+            } else if (n == last.getNext()) {
                 sb.append("[");
                 sb.append(last.getNext().getData());
                 sb.append(",");
-            }else if(n==last){
+            } else if (n == last) {
                 sb.append(last.getData());
                 sb.append("]");
-            }else{
+            } else {
                 sb.append(n.getData());
                 sb.append(",");
             }
@@ -308,5 +308,5 @@ public class DobleCircular<E> implements List<E>{
         }
         return sb.toString();
     }
-    
+
 }

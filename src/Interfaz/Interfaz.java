@@ -6,32 +6,38 @@ import Objetos.Persona;
 import Objetos.Silla;
 import TDAs.ArrayList;
 import TDAs.DobleCircular;
-import TDAs.LinkedList;
 import java.util.Iterator;
 import javafx.application.Application;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Toggle;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class Interfaz extends Application {
 
     MovimientoPersonas movimientoPersonas;
     MovimientoSillas movimientoSillas;
+    
+    ArrayList<Silla> sillas;
+    DobleCircular<Persona> personas;
 
     int numeroDePersonas;
     String sentido;
 
     Boolean juegoActivo;
     Boolean datosListos;
+    Boolean musicaActiva;
 
     VBox PanelDerecho;
     Pane PanelIzquierdo;
@@ -42,6 +48,7 @@ public class Interfaz extends Application {
     Button actualizarNumeroPersonas;
     Button actualizarSentido;
     Button volverEmpezar;
+    Button musica;
 
     Label mensajeNumeroPersonas;
     Label confirmarDatos;
@@ -51,6 +58,7 @@ public class Interfaz extends Application {
         PanelIzquierdo = new Pane();
         juegoActivo = false;
         datosListos = false;
+        musicaActiva = false;
 
     }
 
@@ -63,8 +71,9 @@ public class Interfaz extends Application {
             actualizarNumeroPersonas.setDisable(true);
             actualizarSentido.setDisable(true);
             volverEmpezar.setDisable(true);
-
+            musica.setDisable(true);
         }
+
         primaryStage.setTitle("Juego de Sillas");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -85,22 +94,20 @@ public class Interfaz extends Application {
         });
 
         numeroPersonas = new TextField();
-        numeroPersonas.setPrefWidth(200);
-        numeroPersonas.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent ke) {
-                try {
-                    Integer.parseInt(ke.getText());
-                } catch (Exception exception) {
-                    numeroPersonas.clear();
-                    mensajeNumeroPersonas.setText("Solo ingrese valores numéricos. ");
-                }
-            }
-        });
+        numeroPersonas.setPrefWidth(200);      
 
         actualizarNumeroPersonas = new Button("Actualizar");
         actualizarSentido = new Button("Actualizar");
         volverEmpezar = new Button("Nuevo Juego");
+
+        musica = new Button("Activar Música");
+        musica.setOnAction((event) -> {
+            if(musicaActiva){
+                musicaActiva = false;
+            }else{
+                musicaActiva = true;
+            }            
+        });
 
         cmb = new ComboBox<>();
         cmb.setPrefWidth(200);
@@ -116,6 +123,9 @@ public class Interfaz extends Application {
         PanelDerecho.getChildren().addAll(lsentido, sentidoPanel);
         PanelDerecho.getChildren().addAll(enviarDatos, confirmarDatos);
         PanelDerecho.getChildren().addAll(volverEmpezar);
+        PanelDerecho.getChildren().addAll(musica);
+        
+        setActions();
 
     }
 
@@ -123,20 +133,26 @@ public class Interfaz extends Application {
         movimientoSillas.rellenarLista(numeroDePersonas - 1);
         movimientoPersonas.rellenarLista(numeroDePersonas);
 
-        ArrayList<Silla> sillas = movimientoSillas.getSillas();
-        DobleCircular<Persona> personas = movimientoPersonas.getPersonas();
-        
-        personas.add(0, new Persona("MARIA"));
-        personas.add(0, new Persona("MffdsA"));
-        personas.add(0, new Persona("adsIA"));
-        personas.add(0, new Persona("MertA"));
-        personas.add(0, new Persona("MfgvcIA"));
-        
-        Iterator it = personas.iterador();
-        
+        sillas = movimientoSillas.getSillas();
+        personas = movimientoPersonas.getPersonas();
+
         System.out.println(sillas.size());
         System.out.println(personas.size());
-        
+
+    }
+    
+    public void movimientoPersonas(){
+        Persona aEliminar = null;
+        Iterator iterator = personas.iterador();
+
+        while (musicaActiva) {
+            while (iterator.hasNext()) {
+                aEliminar = (Persona) iterator.next();
+                System.out.println("hola");
+            }
+        }
+
+        System.out.println(aEliminar);
     }
 
     public void actualizarDatos(Button boton) {
@@ -151,6 +167,7 @@ public class Interfaz extends Application {
                         actualizarNumeroPersonas.setDisable(false);
                         actualizarSentido.setDisable(false);
                         volverEmpezar.setDisable(false);
+                        musica.setDisable(false);
 
                         movimientoPersonas = new MovimientoPersonas();
                         movimientoSillas = new MovimientoSillas();
@@ -170,6 +187,22 @@ public class Interfaz extends Application {
         } catch (NumberFormatException excepcion) {
             confirmarDatos.setText("Cantidad ingresada muy grande");
         }
+
+    }
+    
+    private void setActions() {
+        
+        numeroPersonas.setOnKeyReleased(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                try {
+                    Integer.parseInt(ke.getText());
+                } catch (Exception exception) {
+                    numeroPersonas.clear();
+                    mensajeNumeroPersonas.setText("Solo ingrese valores numéricos. ");
+                }
+            }
+        });
 
     }
 }
