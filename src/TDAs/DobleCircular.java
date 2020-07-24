@@ -153,9 +153,9 @@ public class DobleCircular<E> implements List<E>{
         }else if(index==0){
             addFirst(element);
             return;
-        }
-        Node<E> first= last.getNext();
-        for (Node<E> n = first.getNext(); n != last; n = n.getNext()) {
+        } 
+        //Node<E> first= last.getNext();
+        for (Node<E> n = last.getNext().getNext(); n != last.getNext(); n = n.getNext()) {
             if (cont == index) {
                 Node<E> prev = n.getPrevious();
                 Node<E> nuevo = new Node<>(element);
@@ -178,23 +178,28 @@ public class DobleCircular<E> implements List<E>{
             return null;
         } else if (index == 0) {
             return removeFirst();
-        } else if (index == this.efectivo - 1) {
-            return removeLast();
-        }
+        } 
         Node<E> first = last.getNext();
-        for (Node<E> n = first.getNext(); n != last; n = n.getNext()) {
-            if (cont == index) {
+        for (Node<E> n = first.getNext(); n != last.getNext(); n = n.getNext()) {
+            if(cont==index){
                 E eliminado= n.getData();
-                Node<E> prev = n.getPrevious();
-                Node<E> after = n.getNext();
-                n.setData(null);
-                n.setNext(null);
-                n.setPrevious(null);
-                after.setPrevious(prev);
-                prev.setNext(after);
-                efectivo--;
-                return eliminado;
-
+                if(n==first){
+                    this.removeFirst();
+                    return eliminado;
+                }else if(n==first.getPrevious()){
+                    this.removeLast();
+                    return eliminado;
+                }else{
+                    Node<E> prev=n.getPrevious();
+                    Node<E> after=n.getNext();
+                    n.setData(null);
+                    n.setNext(null);
+                    n.setPrevious(null);
+                    after.setPrevious(prev);
+                    prev.setNext(after);
+                    efectivo--;
+                    return eliminado;
+                 }
             }
             cont++;
         }
