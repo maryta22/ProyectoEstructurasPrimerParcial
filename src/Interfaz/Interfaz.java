@@ -8,17 +8,15 @@ import TDAs.ArrayList;
 import TDAs.DobleCircular;
 import java.util.Iterator;
 import javafx.application.Application;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Toggle;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -28,7 +26,7 @@ public class Interfaz extends Application {
 
     MovimientoPersonas movimientoPersonas;
     MovimientoSillas movimientoSillas;
-    
+
     ArrayList<Silla> sillas;
     DobleCircular<Persona> personas;
 
@@ -87,27 +85,15 @@ public class Interfaz extends Application {
         mensajeNumeroPersonas = new Label("");
         Label lsentido = new Label("Escoga el sentido del movimiento de las personas: ");
         confirmarDatos = new Label("");
-
-        enviarDatos = new Button("¡Jugar!");
-        enviarDatos.setOnAction((event) -> {
-            actualizarDatos(enviarDatos);
-        });
-
+      
         numeroPersonas = new TextField();
-        numeroPersonas.setPrefWidth(200);      
+        numeroPersonas.setPrefWidth(200);
 
         actualizarNumeroPersonas = new Button("Actualizar");
         actualizarSentido = new Button("Actualizar");
         volverEmpezar = new Button("Nuevo Juego");
-
         musica = new Button("Activar Música");
-        musica.setOnAction((event) -> {
-            if(musicaActiva){
-                musicaActiva = false;
-            }else{
-                musicaActiva = true;
-            }            
-        });
+        enviarDatos = new Button("¡Jugar!");
 
         cmb = new ComboBox<>();
         cmb.setPrefWidth(200);
@@ -115,6 +101,8 @@ public class Interfaz extends Application {
 
         HBox numeroPersonasPanel = new HBox(5);
         HBox sentidoPanel = new HBox(5);
+        
+        setActions();
 
         numeroPersonasPanel.getChildren().addAll(numeroPersonas, actualizarNumeroPersonas);
         sentidoPanel.getChildren().addAll(cmb, actualizarSentido);
@@ -124,9 +112,6 @@ public class Interfaz extends Application {
         PanelDerecho.getChildren().addAll(enviarDatos, confirmarDatos);
         PanelDerecho.getChildren().addAll(volverEmpezar);
         PanelDerecho.getChildren().addAll(musica);
-        
-        setActions();
-
     }
 
     public void rellenarPanelIzquierdo() {
@@ -140,8 +125,8 @@ public class Interfaz extends Application {
         System.out.println(personas.size());
 
     }
-    
-    public void movimientoPersonas(){
+
+    public void movimientoPersonas() {
         Persona aEliminar = null;
         Iterator iterator = personas.iterador();
 
@@ -189,9 +174,9 @@ public class Interfaz extends Application {
         }
 
     }
-    
+
     private void setActions() {
-        
+
         numeroPersonas.setOnKeyReleased(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent ke) {
@@ -202,6 +187,28 @@ public class Interfaz extends Application {
                     mensajeNumeroPersonas.setText("Solo ingrese valores numéricos. ");
                 }
             }
+        });
+
+        musica.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (musicaActiva) {
+                    musicaActiva = false;
+                } else {
+                    musicaActiva = true;
+                }
+                
+                System.out.println(musicaActiva);
+            }
+
+        });
+        
+        enviarDatos.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                actualizarDatos(enviarDatos);
+            }
+
         });
 
     }
