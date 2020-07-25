@@ -258,7 +258,7 @@ public class DobleCircular<E> implements List<E> {
 
             @Override
             public boolean hasNext() {
-                return contador != efectivo;
+                return contador != -1;
             }
 
             @Override

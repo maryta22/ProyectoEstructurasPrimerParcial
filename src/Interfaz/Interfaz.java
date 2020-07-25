@@ -8,6 +8,8 @@ import TDAs.ArrayList;
 import TDAs.DobleCircular;
 import java.io.File;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -27,6 +29,7 @@ import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 
 public class Interfaz extends Application {
+    RunnablePersona hiloPersona;
 
     MovimientoPersonas movimientoPersonas;
     MovimientoSillas movimientoSillas;
@@ -119,13 +122,15 @@ public class Interfaz extends Application {
     }
 
     public void rellenarPanelIzquierdo() {
-        movimientoSillas.rellenarLista(numeroDePersonas - 1);
-        movimientoPersonas.rellenarLista(numeroDePersonas);
+        //movimientoSillas.rellenarLista(numeroDePersonas - 1);
+        
+        personas = movimientoPersonas.getPersonas();  //Inicializar persona
+        movimientoPersonas.rellenarLista(numeroDePersonas);  //Rellenar persona con la cantidad indicada
 
-        sillas = movimientoSillas.getSillas();
-        personas = movimientoPersonas.getPersonas();
+        //sillas = movimientoSillas.getSillas();
+        
 
-        System.out.println(sillas.size());
+        //System.out.println(sillas.size());
         System.out.println(personas.size());
 
     }
@@ -161,7 +166,7 @@ public class Interfaz extends Application {
                         movimientoPersonas = new MovimientoPersonas();
                         movimientoSillas = new MovimientoSillas();
 
-                        rellenarPanelIzquierdo();
+                        rellenarPanelIzquierdo();   //Aqui se agrega la parte DERECHA
 
                     } else {
                         confirmarDatos.setText("DatosIncompletos");
@@ -206,6 +211,11 @@ public class Interfaz extends Application {
                 player.setVolume(1);
                 player.setCycleCount(MediaPlayer.INDEFINITE);
                 player.play();
+                
+                hiloPersona = new RunnablePersona();  //Comienza el hilo, esto creo que deberia de meterlo en un metodo
+                Thread hiloEliminarPer = new Thread(hiloPersona);
+                hiloEliminarPer.setDaemon(true);
+                hiloEliminarPer.start();
             }
 
             System.out.println(musicaActiva);
@@ -215,5 +225,26 @@ public class Interfaz extends Application {
             actualizarDatos(enviarDatos);
         });
 
+    }
+    
+    public class RunnablePersona implements Runnable{
+        
+        Iterator<Persona> itePersona= personas.iterador();
+        Persona eliminado= null;
+        
+        @Override
+        public void run() {
+            while(musicaActiva && itePersona.hasNext()){
+                eliminado= itePersona.next();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            System.out.println("El eliminado es: " + eliminado);
+            
+        }
+        
     }
 }
