@@ -6,6 +6,7 @@ import Objetos.Persona;
 import Objetos.Silla;
 import TDAs.ArrayList;
 import TDAs.DobleCircular;
+import java.io.File;
 import java.util.Iterator;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -20,6 +21,9 @@ import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 
 public class Interfaz extends Application {
@@ -85,7 +89,7 @@ public class Interfaz extends Application {
         mensajeNumeroPersonas = new Label("");
         Label lsentido = new Label("Escoga el sentido del movimiento de las personas: ");
         confirmarDatos = new Label("");
-      
+
         numeroPersonas = new TextField();
         numeroPersonas.setPrefWidth(200);
 
@@ -101,7 +105,7 @@ public class Interfaz extends Application {
 
         HBox numeroPersonasPanel = new HBox(5);
         HBox sentidoPanel = new HBox(5);
-        
+
         setActions();
 
         numeroPersonasPanel.getChildren().addAll(numeroPersonas, actualizarNumeroPersonas);
@@ -126,7 +130,7 @@ public class Interfaz extends Application {
 
     }
 
-    public void movimientoPersonas() {
+    public void movimientoPersonas() { //Aqui es donde va a suceder la magia
         Persona aEliminar = null;
         Iterator iterator = personas.iterador();
 
@@ -177,38 +181,38 @@ public class Interfaz extends Application {
 
     private void setActions() {
 
-        numeroPersonas.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent ke) {
-                try {
-                    Integer.parseInt(ke.getText());
-                } catch (Exception exception) {
-                    numeroPersonas.clear();
-                    mensajeNumeroPersonas.setText("Solo ingrese valores numéricos. ");
-                }
+        Media media = new Media(new File("src/recursos/seiya.mp3").toURI().toString());
+        MediaPlayer player = new MediaPlayer(media);
+        MediaView mv = new MediaView(player);
+
+        numeroPersonas.setOnKeyReleased((KeyEvent ke) -> {
+            try {
+                Integer.parseInt(ke.getText());
+            } catch (Exception exception) {
+                numeroPersonas.clear();
+                mensajeNumeroPersonas.setText("Solo ingrese valores numéricos. ");
             }
         });
 
-        musica.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (musicaActiva) {
-                    musicaActiva = false;
-                } else {
-                    musicaActiva = true;
-                }
-                
-                System.out.println(musicaActiva);
+        musica.setOnMousePressed((MouseEvent event) -> {
+            if (musicaActiva) {
+                musicaActiva = false;
+                musica.setText("Activar Musica");
+                player.pause();
+            } else {
+                musicaActiva = true;
+                musica.setText("Desactivar Musica");
+                player.setAutoPlay(true);
+                player.setVolume(1);
+                player.setCycleCount(MediaPlayer.INDEFINITE);
+                player.play();
             }
 
+            System.out.println(musicaActiva);
         });
-        
-        enviarDatos.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                actualizarDatos(enviarDatos);
-            }
 
+        enviarDatos.setOnMousePressed((MouseEvent event) -> {
+            actualizarDatos(enviarDatos);
         });
 
     }
