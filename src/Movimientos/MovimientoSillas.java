@@ -13,7 +13,7 @@ public class MovimientoSillas {
     
     public void rellenarLista(int numero){
         for(int i = 0 ; i < numero ; i++){
-            sillas.add(i,new Silla("Silla"+String.valueOf(i)));
+            sillas.add(i,new Silla("Silla"+String.valueOf(i),i));
         }
     }
 
@@ -21,10 +21,4 @@ public class MovimientoSillas {
         return sillas;
     }
 
-    public void setSillas(ArrayList<Silla> sillas) {
-        this.sillas = sillas;
-    }
-      
-    
-    
 }

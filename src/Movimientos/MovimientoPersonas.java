@@ -15,7 +15,7 @@ public class MovimientoPersonas {
     
     public void rellenarLista(int numero){
         for(int i = 0 ; i < numero ; i++){
-            personas.add(i,new Persona("Persona"+String.valueOf(i)));
+            personas.add(i,new Persona("Persona"+String.valueOf(i),i));
         }
     }
    
@@ -23,10 +23,5 @@ public class MovimientoPersonas {
         return personas;
     }
 
-    public void setPersonas(DobleCircular<Persona> personas) {
-        this.personas = personas;
-    }
-    
-    
     
 }

@@ -251,19 +251,17 @@ public class DobleCircular<E> implements List<E> {
     @Override
     public Iterator<E> iterador() {
         Iterator<E> it = new Iterator<E>() {
-            private int contador = 0;
             private Node<E> n = last.getNext(); //first
 
             @Override
             public boolean hasNext() {
-                return contador != -1;
+                return !isEmpty();
             }
 
             @Override
             public E next() {
                 E dato = n.getData();
                 n = n.getNext();
-                    contador++;
                 return dato;
             }
 
@@ -273,19 +271,17 @@ public class DobleCircular<E> implements List<E> {
     
     public Iterator<E> iteradorReverse() {
         Iterator<E> it = new Iterator<E>() {
-            private int contReverso = efectivo - 1;
             private Node<E> p = last;
 
             @Override
             public boolean hasNext() {
-                return contReverso != -1;
+                return !isEmpty();
             }
 
             @Override
             public E next() {
                 E dato = p.getData();
                 p = p.getPrevious();
-                contReverso--;
                 return dato;
             }
 
