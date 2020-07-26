@@ -130,13 +130,12 @@ public class Interfaz extends Application {
     }
 
     public void rellenarPanelIzquierdo() {
-        //movimientoSillas.rellenarLista(numeroDePersonas - 1);
+        sillas = movimientoSillas.getSillas();
+        movimientoSillas.rellenarLista(numeroDePersonas - 1);
 
         personas = movimientoPersonas.getPersonas();  //Inicializar persona
         movimientoPersonas.rellenarLista(numeroDePersonas);  //Rellenar persona con la cantidad indicada
 
-        //sillas = movimientoSillas.getSillas();
-        //System.out.println(sillas.size());
         System.out.println(personas.size());
 
     }
@@ -146,6 +145,9 @@ public class Interfaz extends Application {
         Thread hiloEliminarPer = new Thread(hiloPersona);
         hiloEliminarPer.setDaemon(true);
         hiloEliminarPer.start();
+        volverEmpezar.setDisable(true);
+        actualizarNumeroPersonas.setDisable(true);
+        actualizarSentido.setDisable(true);
     }
 
     public void actualizarDatos(Button boton) {
@@ -201,6 +203,9 @@ public class Interfaz extends Application {
                 player.pause();
 
                 hiloPersona.terminar();
+                volverEmpezar.setDisable(false);
+                actualizarNumeroPersonas.setDisable(false);
+                actualizarSentido.setDisable(false);
 
                 ganador = hiloPersona.eliminado;
 
@@ -246,14 +251,18 @@ public class Interfaz extends Application {
                 } else {
                     itePersona = personas.iteradorReverse();
                 }
-                
-                while (musicaActiva && itePersona.hasNext()) {
+                while (itePersona.hasNext() && musicaActiva) {
+                    while (musicaActiva) {
+                        eliminado = itePersona.next();
+                        if (eliminado == null) {
+                            eliminado = personas.get(personas.size() - 1);
+                        }
+                        System.out.println(eliminado);
+                        Thread.sleep(500);
 
-                    eliminado = itePersona.next();
-                    System.out.println(eliminado);
-                    Thread.sleep(500);
-
+                    }
                 }
+
             } catch (InterruptedException ex) {
                 Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -262,14 +271,17 @@ public class Interfaz extends Application {
 
         public void terminar() {
             try {
+
                 if (personas.size() == 2) {
                     musica.setDisable(true);
                 }
                 System.out.println("El eliminado es: " + eliminado.getNumero());
                 if (eliminado.getNumero() < personas.size()) {
                     personas.remove(eliminado.getNumero());
+                    sillas.removeLast();
                 } else {
                     personas.removeLast();
+                    sillas.removeLast();
                 }
                 System.out.println("Size de personas:" + personas.size());
             } catch (NullPointerException excepcion) {
