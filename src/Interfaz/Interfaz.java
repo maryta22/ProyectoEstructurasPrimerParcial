@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -19,9 +18,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TouchEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -30,58 +29,73 @@ import javafx.stage.Stage;
 
 public class Interfaz extends Application {
 
-    RunnablePersona hiloPersona;
+    private RunnablePersona hiloPersona;
 
-    MovimientoPersonas movimientoPersonas;
-    MovimientoSillas movimientoSillas;
+    private MovimientoPersonas movimientoPersonas;
+    private MovimientoSillas movimientoSillas;
 
-    ArrayList<Silla> sillas;
-    DobleCircular<Persona> personas;
+    private ArrayList<Silla> sillas;
+    private DobleCircular<Persona> personas;
 
-    int numeroDePersonas;
+    private int numeroDePersonas;
 
-    String sentido;
+    private String sentido;
 
-    Boolean juegoActivo;
-    Boolean datosListos;
-    Boolean musicaActiva;
+    private Boolean juegoActivo;
+    private Boolean datosListos;
+    private Boolean musicaActiva;
+    private Boolean cambioSentido;
 
-    VBox PanelDerecho;
-    Pane PanelIzquierdo;
-    TextField numeroPersonas;
-    ComboBox<String> cmb;
+    private VBox PanelDerecho;
+    private StackPane PanelCentral;
+    private TextField numeroPersonas;
+    private ComboBox<String> cmb;
 
-    Button enviarDatos;
-    Button actualizarNumeroPersonas;
-    Button actualizarSentido;
-    Button volverEmpezar;
-    Button musica;
+    private Button enviarDatos;
+    private Button actualizarSentido;
+    private Button volverEmpezar;
+    private Button musica;
 
-    Label mensajeNumeroPersonas;
-    Label confirmarDatos;
+    private Label mensajeNumeroPersonas;
+    private Label confirmarDatos;
 
-    Media media = new Media(new File("src/recursos/musica.mp3").toURI().toString());
-    MediaPlayer player = new MediaPlayer(media);
-    MediaView mv = new MediaView(player);
+    private Media media = new Media(new File("src/recursos/musica.mp3").toURI().toString());
+    private MediaPlayer player = new MediaPlayer(media);
+    private MediaView mv = new MediaView(player);
 
-    Persona ganador;
+    private Persona ganador;
 
     public Interfaz() {
         PanelDerecho = new VBox(5);
-        PanelIzquierdo = new Pane();
+        PanelCentral = new StackPane();
+        PanelCentral.setPrefSize(750, 600);
         juegoActivo = false;
         datosListos = false;
         musicaActiva = false;
+        cambioSentido = false;
 
     }
 
     public void start(Stage primaryStage) {
-        HBox root = new HBox(5, PanelIzquierdo, PanelDerecho);
+     
+        BorderPane root = new BorderPane();
+        root.setCenter(PanelCentral);
+        root.setLeft(PanelDerecho);
+             
+        root.prefWidthProperty().bind(primaryStage.widthProperty());
+        root.prefHeightProperty().bind(primaryStage.heightProperty());
+        
+        PanelCentral.prefWidthProperty().bind(root.widthProperty());
+        PanelCentral.prefHeightProperty().bind(root.heightProperty());
+        
+        PanelDerecho.prefWidthProperty().bind(root.widthProperty());
+        PanelDerecho.prefHeightProperty().bind(root.heightProperty());
+        
+        
         Scene scene = new Scene(root, 1000, 600);
         rellenarPanelDerecho();
 
         if (!juegoActivo) {
-            actualizarNumeroPersonas.setDisable(true);
             actualizarSentido.setDisable(true);
             volverEmpezar.setDisable(true);
             musica.setDisable(true);
@@ -98,13 +112,12 @@ public class Interfaz extends Application {
     public void rellenarPanelDerecho() {
         Label lnumeroPersonas = new Label("Escriba el número de personas: ");
         mensajeNumeroPersonas = new Label("");
-        Label lsentido = new Label("Escoga el sentido del movimiento de las personas: ");
+        Label lsentido = new Label("Sentido del movimiento de las personas: ");
         confirmarDatos = new Label("");
 
         numeroPersonas = new TextField();
         numeroPersonas.setPrefWidth(200);
 
-        actualizarNumeroPersonas = new Button("Actualizar");
         actualizarSentido = new Button("Actualizar");
         volverEmpezar = new Button("Nuevo Juego");
         musica = new Button("Activar Música");
@@ -119,7 +132,7 @@ public class Interfaz extends Application {
 
         setActions();
 
-        numeroPersonasPanel.getChildren().addAll(numeroPersonas, actualizarNumeroPersonas);
+        numeroPersonasPanel.getChildren().addAll(numeroPersonas);
         sentidoPanel.getChildren().addAll(cmb, actualizarSentido);
 
         PanelDerecho.getChildren().addAll(lnumeroPersonas, numeroPersonasPanel, mensajeNumeroPersonas);
@@ -127,9 +140,11 @@ public class Interfaz extends Application {
         PanelDerecho.getChildren().addAll(enviarDatos, confirmarDatos);
         PanelDerecho.getChildren().addAll(volverEmpezar);
         PanelDerecho.getChildren().addAll(musica);
+         
     }
 
     public void rellenarPanelIzquierdo() {
+        
         sillas = movimientoSillas.getSillas();
         movimientoSillas.rellenarLista(numeroDePersonas - 1);
 
@@ -146,8 +161,7 @@ public class Interfaz extends Application {
         hiloEliminarPer.setDaemon(true);
         hiloEliminarPer.start();
         volverEmpezar.setDisable(true);
-        actualizarNumeroPersonas.setDisable(true);
-        actualizarSentido.setDisable(true);
+
     }
 
     public void actualizarDatos(Button boton) {
@@ -159,7 +173,6 @@ public class Interfaz extends Application {
                         sentido = cmb.getValue();
                         juegoActivo = true;
                         enviarDatos.setDisable(true);
-                        actualizarNumeroPersonas.setDisable(false);
                         actualizarSentido.setDisable(false);
                         volverEmpezar.setDisable(false);
                         musica.setDisable(false);
@@ -204,8 +217,6 @@ public class Interfaz extends Application {
 
                 hiloPersona.terminar();
                 volverEmpezar.setDisable(false);
-                actualizarNumeroPersonas.setDisable(false);
-                actualizarSentido.setDisable(false);
 
                 ganador = hiloPersona.eliminado;
 
@@ -234,7 +245,26 @@ public class Interfaz extends Application {
         volverEmpezar.setOnMouseClicked((MouseEvent event) -> {
             actualizarDatos(volverEmpezar);
         });
+        
+        actualizarSentido.setOnMouseClicked((MouseEvent event)->{
+            sentido = cmb.getValue();
+            cambioSentido = true;
+        });
+        
 
+    }
+    
+    public void vaciarPanelDerecho(){
+        PanelDerecho.getChildren().clear();
+    }
+    
+    public void juegoTerminado(){
+        ganador = personas.get(0);
+        mostrarGanador(ganador);
+    }
+    
+    public void mostrarGanador(Persona persona){
+        
     }
 
     public class RunnablePersona implements Runnable {
@@ -253,6 +283,13 @@ public class Interfaz extends Application {
                 }
                 while (itePersona.hasNext() && musicaActiva) {
                     while (musicaActiva) {
+                        if(cambioSentido && sentido == "Horario" ){
+                            itePersona = personas.iteradorReverse();
+                            cambioSentido = false;
+                        }else if(cambioSentido){
+                            itePersona = personas.iteradorReverse();
+                            cambioSentido = false;
+                        }
                         eliminado = itePersona.next();
                         if (eliminado == null) {
                             eliminado = personas.get(personas.size() - 1);
@@ -268,7 +305,7 @@ public class Interfaz extends Application {
             }
 
         }
-
+        
         public void terminar() {
             try {
 
