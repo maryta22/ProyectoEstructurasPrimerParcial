@@ -204,7 +204,6 @@ public class Interfaz extends Application {
 
                 ganador = hiloPersona.eliminado;
 
-
             } else {
                 musicaActiva = true;
                 musica.setText("Desactivar Musica");
@@ -212,10 +211,10 @@ public class Interfaz extends Application {
                 player.setVolume(1);
                 player.setCycleCount(MediaPlayer.INDEFINITE);
                 player.play();
-                
-                if(personas.size()!=0){
+
+                if (personas.size() != 0) {
                     movimientoPersonas();
-                }else{
+                } else {
                     musica.setDisable(true);
                 }
 
@@ -223,8 +222,12 @@ public class Interfaz extends Application {
 
         });
 
-        enviarDatos.setOnMousePressed((MouseEvent event) -> {
+        enviarDatos.setOnMouseClicked((MouseEvent event) -> {
             actualizarDatos(enviarDatos);
+        });
+
+        volverEmpezar.setOnMouseClicked((MouseEvent event) -> {
+            actualizarDatos(volverEmpezar);
         });
 
     }
@@ -235,8 +238,7 @@ public class Interfaz extends Application {
 
         @Override
         public void run() {
-
-            while (musicaActiva) {
+            try {
                 Iterator<Persona> itePersona;
 
                 if (sentido == "Horario") {
@@ -244,16 +246,16 @@ public class Interfaz extends Application {
                 } else {
                     itePersona = personas.iteradorReverse();
                 }
+                
+                while (musicaActiva && itePersona.hasNext()) {
 
-                while (itePersona.hasNext()) {
-                    try {
-                        eliminado = itePersona.next();
-                        Thread.sleep(100);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    eliminado = itePersona.next();
+                    System.out.println(eliminado);
+                    Thread.sleep(500);
+
                 }
-
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }
