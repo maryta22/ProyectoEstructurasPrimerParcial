@@ -11,23 +11,29 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import static javafx.scene.paint.Color.BLACK;
 import javafx.stage.Stage;
 
 public class Interfaz extends Application {
+
+    private BorderPane root;
 
     private RunnablePersona hiloPersona;
 
@@ -45,9 +51,10 @@ public class Interfaz extends Application {
     private Boolean datosListos;
     private Boolean musicaActiva;
     private Boolean cambioSentido;
+    private Boolean nuevoRound;
 
     private VBox PanelDerecho;
-    private StackPane PanelCentral;
+    private Pane PanelCentral;
     private TextField numeroPersonas;
     private ComboBox<String> cmb;
 
@@ -63,35 +70,44 @@ public class Interfaz extends Application {
     private MediaPlayer player = new MediaPlayer(media);
     private MediaView mv = new MediaView(player);
 
+    private ImageView imageView = new ImageView();
+
     private Persona ganador;
+
+    ArrayList<Double> ySillas;
+    ArrayList<Double> xSillas;
+
+    ArrayList<Double> yPersonas;
+    ArrayList<Double> xPersonas;
 
     public Interfaz() {
         PanelDerecho = new VBox(5);
-        PanelCentral = new StackPane();
+        PanelCentral = new Pane();
         PanelCentral.setPrefSize(750, 600);
+
         juegoActivo = false;
         datosListos = false;
         musicaActiva = false;
         cambioSentido = false;
+        nuevoRound = true;
+
+        imageView.setImage(new Image("file:src/recursos/f.gif"));
+
+        yPersonas = new ArrayList<>();
+        xPersonas = new ArrayList<>();
+        ySillas = new ArrayList<>();
+        xSillas = new ArrayList<>();
+
+        sillas = null;
+        personas = null;
 
     }
 
     public void start(Stage primaryStage) {
-     
-        BorderPane root = new BorderPane();
+        root = new BorderPane();
         root.setCenter(PanelCentral);
         root.setLeft(PanelDerecho);
-             
-        root.prefWidthProperty().bind(primaryStage.widthProperty());
-        root.prefHeightProperty().bind(primaryStage.heightProperty());
-        
-        PanelCentral.prefWidthProperty().bind(root.widthProperty());
-        PanelCentral.prefHeightProperty().bind(root.heightProperty());
-        
-        PanelDerecho.prefWidthProperty().bind(root.widthProperty());
-        PanelDerecho.prefHeightProperty().bind(root.heightProperty());
-        
-        
+
         Scene scene = new Scene(root, 1000, 600);
         rellenarPanelDerecho();
 
@@ -103,7 +119,9 @@ public class Interfaz extends Application {
 
         primaryStage.setTitle("Juego de Sillas");
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
+
     }
 
     /**
@@ -140,26 +158,83 @@ public class Interfaz extends Application {
         PanelDerecho.getChildren().addAll(enviarDatos, confirmarDatos);
         PanelDerecho.getChildren().addAll(volverEmpezar);
         PanelDerecho.getChildren().addAll(musica);
-         
+
     }
 
-    public void rellenarPanelIzquierdo() {
+    public void rellenarPanelCentral() {
         
-        sillas = movimientoSillas.getSillas();
-        movimientoSillas.rellenarLista(numeroDePersonas - 1);
+        PanelCentral.getChildren().clear();
 
-        personas = movimientoPersonas.getPersonas();  //Inicializar persona
-        movimientoPersonas.rellenarLista(numeroDePersonas);  //Rellenar persona con la cantidad indicada
+        if (personas == null) {
 
-        System.out.println(personas.size());
+            sillas = movimientoSillas.getSillas();
+            personas = movimientoPersonas.getPersonas();
 
+            movimientoSillas.rellenarLista(numeroDePersonas - 1);
+            movimientoPersonas.rellenarLista(numeroDePersonas);
+        }
+
+        //PanelCentral.getChildren().add(imageView);
+        agregarPersonasPanel();
+        agregarSillasPanel();
+
+    }
+
+    public void agregarPersonasPanel() {
+
+        if (yPersonas.isEmpty()|| nuevoRound) {
+            Double f = (2 * Math.PI) / personas.size();
+            for (int h = 0; h < personas.size(); h++) {
+                yPersonas.add(h, 200 * Math.sin(f));
+                xPersonas.add(h, 200 * Math.cos(f));
+                f = f + (2 * Math.PI) / personas.size();
+            }
+        }
+
+        Double r1 = yPersonas.removeFirst();
+        yPersonas.addLast(r1);
+
+        Double r2 = xPersonas.removeFirst();
+        xPersonas.addLast(r2);
+
+        for (int n = 0; n < personas.size(); n++) {
+            personas.get(n).getCircle().setLayoutX(xPersonas.get(n));
+            personas.get(n).getCircle().setLayoutY(yPersonas.get(n));
+
+            PanelCentral.getChildren().add(personas.get(n).getCircle());
+
+            //root.setCenter(PanelCentral);
+        }
+    }
+
+    public void agregarSillasPanel() {
+
+        if (ySillas.isEmpty()|| nuevoRound) {
+            Double f = (2 * Math.PI) / sillas.size();
+            for (int h = 0; h < sillas.size(); h++) {
+                ySillas.add(h, 200 * Math.sin(f));
+                xSillas.add(h, 200 * Math.cos(f));
+                f = f + (2 * Math.PI) / sillas.size();
+            }
+        }
+
+        for (int n = 0; n < sillas.size(); n++) {
+
+            sillas.get(n).getR().setLayoutX(xSillas.get(n) / 2);
+            sillas.get(n).getR().setLayoutY(ySillas.get(n) / 2);
+            PanelCentral.getChildren().add(sillas.get(n).getR());
+
+            //root.setCenter(PanelCentral);
+        }
     }
 
     public void movimientoPersonas() { //Aqui es donde va a suceder la magia
         hiloPersona = new RunnablePersona();  //Comienza el hilo, esto creo que deberia de meterlo en un metodo
-        Thread hiloEliminarPer = new Thread(hiloPersona);
-        hiloEliminarPer.setDaemon(true);
-        hiloEliminarPer.start();
+        Thread hiloEliminarPersona = new Thread(hiloPersona);
+        hiloEliminarPersona.setDaemon(true);
+
+        hiloEliminarPersona.start();
+
         volverEmpezar.setDisable(true);
 
     }
@@ -180,7 +255,7 @@ public class Interfaz extends Application {
                         movimientoPersonas = new MovimientoPersonas();
                         movimientoSillas = new MovimientoSillas();
 
-                        rellenarPanelIzquierdo();   //Aqui se agrega la parte DERECHA
+                        rellenarPanelCentral();
 
                     } else {
                         confirmarDatos.setText("DatosIncompletos");
@@ -198,6 +273,7 @@ public class Interfaz extends Application {
 
     }
 
+    //Acciones de los botones.
     private void setActions() {
 
         numeroPersonas.setOnKeyReleased((KeyEvent ke) -> {
@@ -245,26 +321,29 @@ public class Interfaz extends Application {
         volverEmpezar.setOnMouseClicked((MouseEvent event) -> {
             actualizarDatos(volverEmpezar);
         });
-        
-        actualizarSentido.setOnMouseClicked((MouseEvent event)->{
+
+        actualizarSentido.setOnMouseClicked((MouseEvent event) -> {
             sentido = cmb.getValue();
             cambioSentido = true;
         });
-        
 
     }
-    
-    public void vaciarPanelDerecho(){
+
+    public void vaciarPanelDerecho() {
         PanelDerecho.getChildren().clear();
     }
-    
-    public void juegoTerminado(){
+
+    public void juegoTerminado() {
         ganador = personas.get(0);
         mostrarGanador(ganador);
     }
-    
-    public void mostrarGanador(Persona persona){
-        
+
+    public void mostrarGanador(Persona persona) {
+
+    }
+
+    public void mover() {
+
     }
 
     public class RunnablePersona implements Runnable {
@@ -283,10 +362,10 @@ public class Interfaz extends Application {
                 }
                 while (itePersona.hasNext() && musicaActiva) {
                     while (musicaActiva) {
-                        if(cambioSentido && sentido == "Horario" ){
+                        if (cambioSentido && sentido == "Horario") {
                             itePersona = personas.iteradorReverse();
                             cambioSentido = false;
-                        }else if(cambioSentido){
+                        } else if (cambioSentido) {
                             itePersona = personas.iteradorReverse();
                             cambioSentido = false;
                         }
@@ -294,10 +373,17 @@ public class Interfaz extends Application {
                         if (eliminado == null) {
                             eliminado = personas.get(personas.size() - 1);
                         }
+                        Platform.runLater(
+                                () -> {
+                                    rellenarPanelCentral();
+                                }
+                        );
+                        nuevoRound = false;
                         System.out.println(eliminado);
                         Thread.sleep(500);
 
                     }
+                    
                 }
 
             } catch (InterruptedException ex) {
@@ -305,14 +391,13 @@ public class Interfaz extends Application {
             }
 
         }
-        
+
         public void terminar() {
             try {
 
                 if (personas.size() == 2) {
                     musica.setDisable(true);
                 }
-                System.out.println("El eliminado es: " + eliminado.getNumero());
                 if (eliminado.getNumero() < personas.size()) {
                     personas.remove(eliminado.getNumero());
                     sillas.removeLast();
@@ -320,7 +405,9 @@ public class Interfaz extends Application {
                     personas.removeLast();
                     sillas.removeLast();
                 }
+                System.out.println("El eliminado es: " + eliminado.getNumero());
                 System.out.println("Size de personas:" + personas.size());
+                nuevoRound = true;
             } catch (NullPointerException excepcion) {
                 System.out.println("Excepcion en terminar()");
 
@@ -329,4 +416,5 @@ public class Interfaz extends Application {
         }
 
     }
+
 }

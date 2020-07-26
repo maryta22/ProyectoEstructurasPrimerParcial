@@ -13,7 +13,7 @@ public class MovimientoSillas {
     
     public void rellenarLista(int numero){
         for(int i = 0 ; i < numero ; i++){
-            sillas.add(i,new Silla("Silla"+String.valueOf(i+1),i));
+            sillas.add(i,new Silla("Silla"+String.valueOf(i+1),i,100/numero));
         }
     }
 
