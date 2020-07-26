@@ -291,8 +291,8 @@ public class DobleCircular<E> implements List<E> {
 
             @Override
             public boolean hasNext() {
-                if(!isEmpty()){
-                    return n.getData()!=null;
+                if (!isEmpty()) {
+                    return n.getData() != null;
                 }
                 return false;
             }
@@ -301,6 +301,11 @@ public class DobleCircular<E> implements List<E> {
             public E next() {
                 E dato = n.getData();
                 n = n.getNext();
+                if (dato == null) {
+                    dato = n.getData();
+                    n = n.getNext();
+                }
+
                 return dato;
             }
 
@@ -314,8 +319,8 @@ public class DobleCircular<E> implements List<E> {
 
             @Override
             public boolean hasNext() {
-                if(!isEmpty()){
-                    return p.getData()!=null;
+                if (!isEmpty()) {
+                    return p.getData() != null;
                 }
                 return false;
             }
@@ -324,6 +329,11 @@ public class DobleCircular<E> implements List<E> {
             public E next() {
                 E dato = p.getData();
                 p = p.getPrevious();
+                if (dato == null) {
+                    dato = p.getData();
+                    p = p.getPrevious();
+                }
+
                 return dato;
             }
 
@@ -355,5 +365,4 @@ public class DobleCircular<E> implements List<E> {
         }
         return sb.toString();
     }*/
-
 }

@@ -53,7 +53,7 @@ public class Interfaz extends Application {
     private Boolean cambioSentido;
     private Boolean nuevoRound;
 
-    private VBox PanelDerecho;
+    private VBox PanelIzquierdo;
     private Pane PanelCentral;
     private TextField numeroPersonas;
     private ComboBox<String> cmb;
@@ -81,7 +81,7 @@ public class Interfaz extends Application {
     ArrayList<Double> xPersonas;
 
     public Interfaz() {
-        PanelDerecho = new VBox(5);
+        PanelIzquierdo = new VBox(5);
         PanelCentral = new Pane();
         PanelCentral.setPrefSize(750, 600);
 
@@ -106,10 +106,10 @@ public class Interfaz extends Application {
     public void start(Stage primaryStage) {
         root = new BorderPane();
         root.setCenter(PanelCentral);
-        root.setLeft(PanelDerecho);
+        root.setLeft(PanelIzquierdo);
 
         Scene scene = new Scene(root, 1000, 600);
-        rellenarPanelDerecho();
+        rellenarPanelIzquierdo();
 
         if (!juegoActivo) {
             actualizarSentido.setDisable(true);
@@ -127,7 +127,7 @@ public class Interfaz extends Application {
     /**
      * @MariaRivera Arma la parte derecha de la Interfaz
      */
-    public void rellenarPanelDerecho() {
+    public void rellenarPanelIzquierdo() {
         Label lnumeroPersonas = new Label("Escriba el número de personas: ");
         mensajeNumeroPersonas = new Label("");
         Label lsentido = new Label("Sentido del movimiento de las personas: ");
@@ -153,11 +153,11 @@ public class Interfaz extends Application {
         numeroPersonasPanel.getChildren().addAll(numeroPersonas);
         sentidoPanel.getChildren().addAll(cmb, actualizarSentido);
 
-        PanelDerecho.getChildren().addAll(lnumeroPersonas, numeroPersonasPanel, mensajeNumeroPersonas);
-        PanelDerecho.getChildren().addAll(lsentido, sentidoPanel);
-        PanelDerecho.getChildren().addAll(enviarDatos, confirmarDatos);
-        PanelDerecho.getChildren().addAll(volverEmpezar);
-        PanelDerecho.getChildren().addAll(musica);
+        PanelIzquierdo.getChildren().addAll(lnumeroPersonas, numeroPersonasPanel, mensajeNumeroPersonas);
+        PanelIzquierdo.getChildren().addAll(lsentido, sentidoPanel);
+        PanelIzquierdo.getChildren().addAll(enviarDatos, confirmarDatos);
+        PanelIzquierdo.getChildren().addAll(volverEmpezar);
+        PanelIzquierdo.getChildren().addAll(musica);
 
     }
 
@@ -189,6 +189,9 @@ public class Interfaz extends Application {
                 xPersonas.add(h, 200 * Math.cos(f));
                 f = f + (2 * Math.PI) / personas.size();
             }
+            
+            ySillas.clear();
+            xSillas.clear();
         }
 
         Double r1 = yPersonas.removeFirst();
@@ -210,6 +213,10 @@ public class Interfaz extends Application {
     public void agregarSillasPanel() {
 
         if (ySillas.isEmpty()|| nuevoRound) {
+            
+            ySillas.clear();
+            xSillas.clear();
+            
             Double f = (2 * Math.PI) / sillas.size();
             for (int h = 0; h < sillas.size(); h++) {
                 ySillas.add(h, 200 * Math.sin(f));
@@ -329,8 +336,8 @@ public class Interfaz extends Application {
 
     }
 
-    public void vaciarPanelDerecho() {
-        PanelDerecho.getChildren().clear();
+    public void vaciarPanelIzquierdo() {
+        PanelIzquierdo.getChildren().clear();
     }
 
     public void juegoTerminado() {
@@ -360,7 +367,7 @@ public class Interfaz extends Application {
                 } else {
                     itePersona = personas.iteradorReverse();
                 }
-                while (itePersona.hasNext() && musicaActiva) {
+                while (musicaActiva && itePersona.hasNext()) {
                     while (musicaActiva) {
                         if (cambioSentido && sentido == "Horario") {
                             itePersona = personas.iteradorReverse();
@@ -370,9 +377,6 @@ public class Interfaz extends Application {
                             cambioSentido = false;
                         }
                         eliminado = itePersona.next();
-                        if (eliminado == null) {
-                            eliminado = personas.get(personas.size() - 1);
-                        }
                         Platform.runLater(
                                 () -> {
                                     rellenarPanelCentral();
@@ -388,6 +392,8 @@ public class Interfaz extends Application {
 
             } catch (InterruptedException ex) {
                 Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+            } catch(NullPointerException ex){
+                System.out.println("F");
             }
 
         }
