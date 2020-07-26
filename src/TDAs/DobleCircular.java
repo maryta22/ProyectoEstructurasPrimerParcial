@@ -17,113 +17,132 @@ public class DobleCircular<E> implements List<E> {
     private int efectivo;
 
     public DobleCircular() {
-        this.last = null;
+        this.last = new Node<>(null);
         this.efectivo = 0;
     }
 
     public Node<E> getLast() {
-        return last;
+        return last.getPrevious();
     }
 
     public void setLast(Node<E> last) {
-        this.last = last;
+        this.last.setPrevious(last);
     }
 
     @Override
     public boolean addFirst(E e) {
-        if (e == null) {
-            return false;
-        }
-        Node<E> nuevo = new Node<>(e);
-        if (this.isEmpty()) {
-            last = nuevo;
-            this.efectivo++;
-            last.setNext(nuevo);
-            last.setPrevious(nuevo);
-            return true;
+        if (e != null) {
+            Node<E> nuevo = new Node<>(e);
+            if (this.isEmpty()) {
+                last.setNext(nuevo);
+                last.setPrevious(nuevo);
+                nuevo.setNext(last);
+                nuevo.setPrevious(last);
+                efectivo++;
+                return true;
+            } else {
+                nuevo.setNext(last.getNext());
+                last.getNext().setPrevious(nuevo);
+                last.setNext(nuevo);
+                nuevo.setPrevious(last);
+                efectivo++;
+                return true;
+            }
         } else {
-            nuevo.setNext(last.getNext());
-            nuevo.setPrevious(last);
-            last.getNext().setPrevious(nuevo);
-            last.setNext(nuevo);
-            this.efectivo++;
-            return true;
+            return false;
         }
     }
 
     @Override
     public boolean addLast(E e) {
-        if (e == null) {
+        if (e != null) {
+            Node<E> nuevo = new Node<>(e);
+            if (this.isEmpty()) {
+                last.setNext(nuevo);
+                last.setPrevious(nuevo);
+                nuevo.setNext(last);
+                nuevo.setPrevious(last);
+                efectivo++;
+                return true;
+            } else {
+                nuevo.setPrevious(last.getPrevious());
+                last.getPrevious().setNext(nuevo);
+                nuevo.setNext(last);
+                last.setPrevious(nuevo);
+                efectivo++;
+                return true;
+            }
+        } else {
             return false;
         }
-        Node<E> nuevo = new Node<>(e);
+
+    }
+
+    @Override
+    public E removeFirst() throws IndexOutOfBoundsException {
         if (this.isEmpty()) {
-            last = nuevo;
-            this.efectivo++;
-            last.setNext(nuevo);
-            last.setPrevious(nuevo);
-            return true;
+            throw new IndexOutOfBoundsException();
         } else {
-            nuevo.setPrevious(last);
-            nuevo.setNext(last.getNext());
-            last.getNext().setPrevious(nuevo);
-            last.setNext(nuevo);
-            setLast(nuevo);
-            this.efectivo++;
-            return true;
+            if (efectivo == 1) {
+                Node<E> unico = last.getPrevious();
+                E eliminado = unico.getData();
+                unico.setNext(null);
+                unico.setPrevious(null);
+                unico.setData(null);
+                last.setNext(null);
+                last.setPrevious(null);
+
+                efectivo--;
+                return eliminado;
+            } else {
+                Node<E> siguiente = last.getNext().getNext();
+
+                E eliminado = last.getNext().getData();
+
+                last.getNext().setData(null);
+                last.getNext().setNext(null);
+                last.setNext(siguiente);
+                last.getNext().setPrevious(null);
+                siguiente.setPrevious(last);
+
+                efectivo--;
+                return eliminado;
+            }
+
         }
     }
 
     @Override
-    public E removeFirst() {
+    public E removeLast() throws IndexOutOfBoundsException {
         if (this.isEmpty()) {
-            return null;
-        } else if (last == last.getNext()) { // En caso que haya un solo nodo
-            E eliminado = last.getData();
-            last.setData(null);
-            last = null;  //Segun yo con eso todo se hace null, no creo que sea necesario setear next, previous con null
-            efectivo--;
-            return eliminado;
+            throw new IndexOutOfBoundsException();
         } else {
-            E eliminado = last.getNext().getData();
-            Node<E> temp = last.getNext().getNext(); //Obtengo el siguiente del "primero"
-            last.getNext().setData(null);
-            last.getNext().setNext(null);
-            last.getNext().setPrevious(null);
+            if (efectivo == 1) {
+                Node<E> unico = last.getPrevious();
+                E eliminado = unico.getData();
+                unico.setNext(null);
+                unico.setPrevious(null);
+                unico.setData(null);
+                last.setNext(null);
+                last.setPrevious(null);
 
-            last.setNext(temp);
-            temp.setPrevious(last);
+                efectivo--;
+                return eliminado;
+            } else {
+                Node<E> anterior = last.getPrevious().getPrevious();
 
-            this.efectivo--;
-            return eliminado;
-        }
-    }
+                E eliminado = last.getPrevious().getData();
 
-    @Override
-    public E removeLast() {
-        if (this.isEmpty()) {
-            return null;
+                last.getPrevious().setData(null);
+                last.getPrevious().setNext(null);
+                anterior.setNext(last);
+                last.getPrevious().setPrevious(null);
+                last.setPrevious(anterior);
 
-        } else if (last.getNext() == last) { //En caso que haya un solo nodo
-            E eliminado = last.getData();
-            last.setData(null);
-            last = null; //Segun yo con eso todo se hace null, no creo que sea necesario setear next, previous con null
-            this.efectivo--;
-            return eliminado;
-        } else {
-            E eliminado = last.getData();
-            Node<E> previo = last.getPrevious();
+                efectivo--;
+                return eliminado;
+            }
 
-            previo.setNext(last.getNext());
-            last.getNext().setPrevious(previo);
-
-            last.setPrevious(null);
-            last.setNext(null);
-
-            setLast(previo);
-
-            this.efectivo--;
-            return eliminado;
         }
     }
 
@@ -139,111 +158,128 @@ public class DobleCircular<E> implements List<E> {
 
     @Override
     public void clear() {
-        setLast(null); //Con esto se pierden todos los enlaces y el gargabe collection se encarga de lo demas.
+        last.getPrevious().setNext(null);
+        last.getNext().setPrevious(null);
+        last.setNext(null);
+        last.setPrevious(null);
     }
 
     @Override
-    public void add(int index, E element) {
-        int cont = 1;
-        if (element == null) {
-            return;
-        } else if (index == efectivo) {
-            addLast(element);
-            return;
-        } else if (index == 0) {
-            addFirst(element);
-            return;
-        }
-        //Node<E> first= last.getNext();
-        for (Node<E> n = last.getNext().getNext(); n != last.getNext(); n = n.getNext()) {
-            if (cont == index) {
-                Node<E> prev = n.getPrevious();
-                Node<E> nuevo = new Node<>(element);
-                prev.setNext(nuevo);
-                nuevo.setPrevious(prev);
-                nuevo.setNext(n);
-                n.setPrevious(nuevo);
-                efectivo++;
-                return;
-
-            }
-            cont++;
-        }
-    }
-
-    @Override
-    public E remove(int index) {
-        int cont = 1;
-        if (index >= efectivo || index < 0) {
-            return null;
-        } else if (index == 0) {
-            return removeFirst();
-        }
-        Node<E> first = last.getNext();
-        for (Node<E> n = first.getNext(); n != last.getNext(); n = n.getNext()) {
-            if (cont == index) {
-                E eliminado = n.getData();
-                if (n == first) {
-                    this.removeFirst();
-                    return eliminado;
-                } else if (n == first.getPrevious()) {
-                    this.removeLast();
-                    return eliminado;
+    public void add(int index, E element) throws IllegalArgumentException, IndexOutOfBoundsException {
+        int cont = 0;
+        if (element != null) {
+            if (index >= 0 && index <= efectivo) {
+                if (index == 0) {
+                    addFirst(element);
+                } else if (index == efectivo) {
+                    addLast(element);
                 } else {
-                    Node<E> prev = n.getPrevious();
-                    Node<E> after = n.getNext();
-                    n.setData(null);
-                    n.setNext(null);
-                    n.setPrevious(null);
-                    after.setPrevious(prev);
-                    prev.setNext(after);
-                    efectivo--;
-                    return eliminado;
+                    Node<E> nuevo = new Node<>(element);
+                    for (Node<E> n = last.getNext(); n.getData() != null; n = n.getNext()) {
+                        if (cont == index) {
+                            Node<E> anterior = n.getPrevious();
+                            n.setPrevious(nuevo);
+                            nuevo.setPrevious(anterior);
+                            anterior.setNext(nuevo);
+                            nuevo.setNext(n);
+
+                            efectivo++;
+
+                        }
+                        cont++;
+                    }
+                }
+            } else {
+                throw new IndexOutOfBoundsException();
+            }
+        } else {
+            throw new IllegalArgumentException();
+        }
+
+    }
+
+    @Override
+    public E remove(int index) throws IndexOutOfBoundsException {
+        if (index < efectivo && index >= 0) {
+            int cont = 0;
+            if (index == 0) {
+                return removeFirst();
+            } else if (index == efectivo - 1) {
+                return removeLast();
+            } else {
+                for (Node<E> n = last.getNext(); n.getData() != null; n = n.getNext()) {
+                    if (cont == index) {
+                        E eliminado = n.getData();
+
+                        Node<E> prev = n.getPrevious();
+                        Node<E> after = n.getNext();
+
+                        n.setData(null);
+                        n.setPrevious(null);
+                        after.setPrevious(prev);
+                        n.setNext(null);
+                        prev.setNext(after);
+
+                        efectivo--;
+
+                        return eliminado;
+                    }
+                    cont++;
                 }
             }
-            cont++;
+        } else {
+            throw new IndexOutOfBoundsException();
         }
         return null;
     }
 
     @Override
-    public E get(int index) {
-        int cont = 1;
-        if (index >= efectivo || index < 0) {
-            return null;
-        } else if (index == 0) {
-            return last.getNext().getData();
-        } else if (index == efectivo - 1) {
-            return last.getData();
-        }
-        Node<E> first = last.getNext();
-        for (Node<E> n = first.getNext(); n != last; n = n.getNext()) {
-            if (cont == index) {
-                return n.getData();
+    public E get(int index) throws IndexOutOfBoundsException {
+        if (index < efectivo && index >= 0) {
+            int cont = 0;
+            if (index == 0) {
+                return last.getNext().getData();
+            } else if (index == efectivo - 1) {
+                return last.getPrevious().getData();
+            } else {
+                for (Node<E> n = last.getNext(); n.getData() != null; n = n.getNext()) {
+                    if (cont == index) {
+                        return n.getData();
+                    }
+                    cont++;
+                }
             }
-            cont++;
+
+        } else {
+            throw new IndexOutOfBoundsException();
         }
         return null;
     }
 
     @Override
-    public E set(int index, E element) {
-        int cont = 0;
-        if (element == null || index >= efectivo || index < 0) {
-            return null;
-        } else if (index == efectivo - 1) {
-            E cambiado = last.getData();
-            last.setData(element);
-            return cambiado;
-        }
-
-        for (Node<E> n = last.getNext(); n != last; n = n.getNext()) {
-            if (cont == index) {
-                E cambiado = n.getData();
-                n.setData(element);
-                return cambiado;
+    public E set(int index, E element) throws IllegalArgumentException, IndexOutOfBoundsException {
+        if (element != null) {
+            if (index < efectivo && index >= 0) {
+                int cont = 0;
+                if (index == efectivo - 1) {
+                    E cambiado = last.getPrevious().getData();
+                    last.getPrevious().setData(element);
+                    return cambiado;
+                } else {
+                    for (Node<E> n = last.getNext(); n.getData() != null; n = n.getNext()) {
+                        if (cont == index) {
+                            E cambiado = n.getData();
+                            n.setData(element);
+                            return cambiado;
+                        }
+                        cont++;
+                    }
+                }
+            } else {
+                throw new IndexOutOfBoundsException();
             }
-            cont++;
+        } else {
+            throw new IllegalArgumentException();
         }
         return null;
     }
@@ -255,7 +291,10 @@ public class DobleCircular<E> implements List<E> {
 
             @Override
             public boolean hasNext() {
-                return !isEmpty();
+                if(!isEmpty()){
+                    return n.getData()!=null;
+                }
+                return false;
             }
 
             @Override
@@ -268,14 +307,17 @@ public class DobleCircular<E> implements List<E> {
         };
         return it;
     }
-    
+
     public Iterator<E> iteradorReverse() {
         Iterator<E> it = new Iterator<E>() {
-            private Node<E> p = last;
+            private Node<E> p = last.getPrevious();
 
             @Override
             public boolean hasNext() {
-                return !isEmpty();
+                if(!isEmpty()){
+                    return p.getData()!=null;
+                }
+                return false;
             }
 
             @Override
@@ -289,8 +331,8 @@ public class DobleCircular<E> implements List<E> {
         return it;
     }
 
-    @Override
-    public String toString() {
+    /*@Override
+        public String toString() {
         StringBuilder sb = new StringBuilder();
         int cont = 0;
         for (Node<E> n = last.getNext(); cont < efectivo; n = n.getNext()) {
@@ -312,6 +354,6 @@ public class DobleCircular<E> implements List<E> {
             cont++;
         }
         return sb.toString();
-    }
+    }*/
 
 }

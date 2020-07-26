@@ -3,7 +3,6 @@ package Movimientos;
 
 import Objetos.Persona;
 import TDAs.DobleCircular;
-import TDAs.LinkedList;
 
 
 public class MovimientoPersonas {
@@ -15,7 +14,7 @@ public class MovimientoPersonas {
     
     public void rellenarLista(int numero){
         for(int i = 0 ; i < numero ; i++){
-            personas.add(i,new Persona("Persona"+String.valueOf(i),i));
+            personas.add(i,new Persona("Persona"+String.valueOf(i+1),i));
         }
     }
    

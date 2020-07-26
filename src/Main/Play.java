@@ -2,8 +2,6 @@
 package Main;
 
 import Interfaz.Interfaz;
-import TDAs.LinkedList;
-import java.util.Iterator;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -21,6 +19,8 @@ public class Play extends Application {
     }
     public static void main(String[] args) {
         launch(args);
+        
+     
     }
     
 }

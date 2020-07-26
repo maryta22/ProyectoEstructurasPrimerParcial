@@ -39,6 +39,7 @@ public class Interfaz extends Application {
     DobleCircular<Persona> personas;
 
     int numeroDePersonas;
+
     String sentido;
 
     Boolean juegoActivo;
@@ -59,9 +60,11 @@ public class Interfaz extends Application {
     Label mensajeNumeroPersonas;
     Label confirmarDatos;
 
-    Media media = new Media(new File("src/recursos/seiya.mp3").toURI().toString());
+    Media media = new Media(new File("src/recursos/musica.mp3").toURI().toString());
     MediaPlayer player = new MediaPlayer(media);
     MediaView mv = new MediaView(player);
+
+    Persona ganador;
 
     public Interfaz() {
         PanelDerecho = new VBox(5);
@@ -179,7 +182,6 @@ public class Interfaz extends Application {
         }
 
     }
-    
 
     private void setActions() {
 
@@ -197,11 +199,12 @@ public class Interfaz extends Application {
                 musicaActiva = false;
                 musica.setText("Activar Musica");
                 player.pause();
-                
-                if(!personas.isEmpty()){
-                    hiloPersona.terminar();
-                }
-                
+
+                hiloPersona.terminar();
+
+                ganador = hiloPersona.eliminado;
+
+
             } else {
                 musicaActiva = true;
                 musica.setText("Desactivar Musica");
@@ -210,8 +213,10 @@ public class Interfaz extends Application {
                 player.setCycleCount(MediaPlayer.INDEFINITE);
                 player.play();
                 
-                if(!personas.isEmpty()){
+                if(personas.size()!=0){
                     movimientoPersonas();
+                }else{
+                    musica.setDisable(true);
                 }
 
             }
@@ -226,26 +231,50 @@ public class Interfaz extends Application {
 
     public class RunnablePersona implements Runnable {
 
-        Iterator<Persona> itePersona = personas.iterador();
         Persona eliminado = null;
 
         @Override
         public void run() {
-            while (musicaActiva && itePersona.hasNext()) {
-                eliminado = itePersona.next();
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+
+            while (musicaActiva) {
+                Iterator<Persona> itePersona;
+
+                if (sentido == "Horario") {
+                    itePersona = personas.iterador();
+                } else {
+                    itePersona = personas.iteradorReverse();
                 }
+
+                while (itePersona.hasNext()) {
+                    try {
+                        eliminado = itePersona.next();
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+
             }
 
         }
-        
-        public void terminar(){
-            personas.remove(eliminado.getNumero());
-            System.out.println("Size de personas:" + personas.size());
-            System.out.println("El eliminado es: " + eliminado.getNombre());
+
+        public void terminar() {
+            try {
+                if (personas.size() == 2) {
+                    musica.setDisable(true);
+                }
+                System.out.println("El eliminado es: " + eliminado.getNumero());
+                if (eliminado.getNumero() < personas.size()) {
+                    personas.remove(eliminado.getNumero());
+                } else {
+                    personas.removeLast();
+                }
+                System.out.println("Size de personas:" + personas.size());
+            } catch (NullPointerException excepcion) {
+                System.out.println("Excepcion en terminar()");
+
+            }
+
         }
 
     }
