@@ -209,8 +209,8 @@ public class Interfaz extends Application {
         xPersonas.addLast(r2);
 
         for (int n = 0; n < personas.size(); n++) {
-            personas.get(n).getCircle().setLayoutX(xPersonas.get(n) * 3 / 4);
-            personas.get(n).getCircle().setLayoutY(yPersonas.get(n) * 3 / 4);
+            personas.get(n).getCircle().setLayoutX(xPersonas.get(n));
+            personas.get(n).getCircle().setLayoutY(yPersonas.get(n));
 
             PanelCentral.getChildren().add(personas.get(n).getCircle());
 
@@ -292,6 +292,55 @@ public class Interfaz extends Application {
         }
 
     }
+    
+    public void vaciarPanelIzquierdo() {
+        PanelIzquierdo.getChildren().clear();
+    }
+
+    public void asignarSillas(Persona persona) {
+        PanelCentral.getChildren().clear();
+        for (int n = 0; n < personas.size(); n++) {
+            if (n < sillas.size()) {
+                apartarEliminado(n,persona);
+            } else {
+                apartarEliminado(n,persona);
+            }
+
+            PanelCentral.getChildren().add(personas.get(n).getCircle());
+
+        }
+
+    }
+
+    public void apartarEliminado(int n, Persona persona) {
+        if (n == buscarPersona(persona)) {
+            personas.get(n).getCircle().setLayoutX(xPersonas.get(n));
+            personas.get(n).getCircle().setLayoutY(yPersonas.get(n));
+        } else {
+            personas.get(n).getCircle().setLayoutX(xPersonas.get(n) / 2);
+            personas.get(n).getCircle().setLayoutY(yPersonas.get(n) / 2);
+        }
+    }
+
+    public void presentarGanador() {
+        Label ganador = new Label("El ganador es el jugador :" + personas.get(0).getNombre());
+        PanelCentral.getChildren().clear();
+        PanelCentral.getChildren().addAll(personas.get(0).getCircle(), ganador);
+    }
+
+    public int buscarPersona(Persona persona) {
+        for (int i = 0; i < personas.size(); i++) {
+            if (personas.get(i).equals(persona)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+    
+    
+    
+    
+    ////////////////////////////////ACCIONES////////////////////////////////////
 
     //Acciones de los botones.
     private void setActions() {
@@ -317,19 +366,20 @@ public class Interfaz extends Application {
                 volverEmpezar.setDisable(false);
 
             } else {
-                musicaActiva = true;
-                musica.setText("Desactivar Musica");
-                player.setAutoPlay(true);
-                player.setVolume(1);
-                player.setCycleCount(MediaPlayer.INDEFINITE);
-                player.play();
+                if (numeroDePersonas != 1) {
+                    musicaActiva = true;
+                    musica.setText("Desactivar Musica");
+                    player.setAutoPlay(true);
+                    player.setVolume(1);
+                    player.setCycleCount(MediaPlayer.INDEFINITE);
+                    player.play();
 
-                if (personas.size() != 0) {
-                    movimientoPersonas();
-                } else {
-                    musica.setDisable(true);
+                    if (personas.size() != 0) {
+                        movimientoPersonas();
+                    } else {
+                        musica.setDisable(true);
+                    }
                 }
-
             }
 
         });
@@ -349,35 +399,8 @@ public class Interfaz extends Application {
 
     }
 
-    public void vaciarPanelIzquierdo() {
-        PanelIzquierdo.getChildren().clear();
-    }
-
-    public void asignarSillas(Persona persona) {
-        PanelCentral.getChildren().clear();
-        for (int n = 0; n < personas.size(); n++) {
-            if (n < sillas.size()) {
-                personas.get(n).getCircle().setLayoutX(xSillas.get(n) / 2);
-                personas.get(n).getCircle().setLayoutY(ySillas.get(n) / 2);
-            } else {
-                personas.get(n).getCircle().setLayoutX(xPersonas.get(n) );
-                personas.get(n).getCircle().setLayoutY(yPersonas.get(n) );
-            }
-
-            PanelCentral.getChildren().add(personas.get(n).getCircle());
-
-        }
-
-    }
-
-    public int buscarPersona(Persona persona) {
-        for (int i = 0; i < personas.size(); i++) {
-            if (personas.get(i).equals(persona)) {
-                return i;
-            }
-        }
-        return 0;
-    }
+    
+    ////////////////////////////////HILO///////////////////////////////////////
 
     public class RunnablePersona implements Runnable {
 
@@ -427,17 +450,18 @@ public class Interfaz extends Application {
         public void terminar() {
             try {
 
-                if (personas.size() == 2) {
-                    musica.setDisable(true);
-                }
-                
                 asignarSillas(eliminado);
-                
+
                 personas.remove(buscarPersona(eliminado));
                 sillas.remove(buscarPersona(eliminado));
 
                 System.out.println("El eliminado es: " + eliminado.getNumero());
                 System.out.println("Size de personas:" + personas.size());
+
+                if (personas.size() == 1) {
+                    musica.setDisable(true);
+                    presentarGanador();
+                }
 
             } catch (NullPointerException excepcion) {
                 excepcion.getCause();
