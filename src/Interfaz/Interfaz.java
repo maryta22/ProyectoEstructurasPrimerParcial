@@ -81,9 +81,6 @@ public class Interfaz extends Application {
     ArrayList<Double> xPersonas;
 
     public Interfaz() {
-        PanelIzquierdo = new VBox(5);
-        PanelCentral = new Pane();
-        PanelCentral.setPrefSize(750, 600);
 
         juegoActivo = false;
         musicaActiva = false;
@@ -105,6 +102,11 @@ public class Interfaz extends Application {
     }
 
     public void start(Stage primaryStage) {
+
+        PanelIzquierdo = new VBox(5);
+        PanelCentral = new Pane();
+        PanelCentral.setPrefSize(750, 600);
+
         root = new BorderPane();
         root.setCenter(PanelCentral);
         root.setLeft(PanelIzquierdo);
@@ -157,8 +159,9 @@ public class Interfaz extends Application {
         PanelIzquierdo.getChildren().addAll(lnumeroPersonas, numeroPersonasPanel, mensajeNumeroPersonas);
         PanelIzquierdo.getChildren().addAll(lsentido, sentidoPanel);
         PanelIzquierdo.getChildren().addAll(enviarDatos, confirmarDatos);
-        PanelIzquierdo.getChildren().addAll(volverEmpezar);
         PanelIzquierdo.getChildren().addAll(musica);
+        PanelIzquierdo.getChildren().addAll(volverEmpezar);
+        
 
     }
 
@@ -225,8 +228,8 @@ public class Interfaz extends Application {
         }
 
         for (int n = 0; n < sillas.size(); n++) {
-            sillas.get(n).getR().setLayoutX(xSillas.get(n) / 2);
-            sillas.get(n).getR().setLayoutY(ySillas.get(n) / 2);
+            sillas.get(n).getR().setLayoutX(xSillas.get(n) / 5);
+            sillas.get(n).getR().setLayoutY(ySillas.get(n) / 5);
 
             PanelCentral.getChildren().add(sillas.get(n).getR());
 
@@ -292,18 +295,41 @@ public class Interfaz extends Application {
         }
 
     }
-    
-    public void vaciarPanelIzquierdo() {
+
+    public void nuevoJuego() {
         PanelIzquierdo.getChildren().clear();
+        PanelCentral.getChildren().clear();
+        rellenarPanelIzquierdo();
+
+        juegoActivo = false;
+        musicaActiva = false;
+        cambioSentido = false;
+
+        imageView.setImage(new Image("file:src/recursos/f.gif"));
+
+        yPersonas.clear();
+        xPersonas.clear();
+        ySillas.clear();
+        xSillas.clear();
+
+        sillas = null;
+        personas = null;
+
+        personasCopia.clear();
+        sillasCopia.clear();
+
+        actualizarSentido.setDisable(true);
+        volverEmpezar.setDisable(true);
+        musica.setDisable(true);
     }
 
     public void asignarSillas(Persona persona) {
         PanelCentral.getChildren().clear();
         for (int n = 0; n < personas.size(); n++) {
             if (n < sillas.size()) {
-                apartarEliminado(n,persona);
+                apartarEliminado(n, persona);
             } else {
-                apartarEliminado(n,persona);
+                apartarEliminado(n, persona);
             }
 
             PanelCentral.getChildren().add(personas.get(n).getCircle());
@@ -317,8 +343,8 @@ public class Interfaz extends Application {
             personas.get(n).getCircle().setLayoutX(xPersonas.get(n));
             personas.get(n).getCircle().setLayoutY(yPersonas.get(n));
         } else {
-            personas.get(n).getCircle().setLayoutX(xPersonas.get(n) / 2);
-            personas.get(n).getCircle().setLayoutY(yPersonas.get(n) / 2);
+            personas.get(n).getCircle().setLayoutX(xPersonas.get(n) / 5);
+            personas.get(n).getCircle().setLayoutY(yPersonas.get(n) / 5);
         }
     }
 
@@ -336,12 +362,8 @@ public class Interfaz extends Application {
         }
         return 0;
     }
-    
-    
-    
-    
-    ////////////////////////////////ACCIONES////////////////////////////////////
 
+    ////////////////////////////////ACCIONES////////////////////////////////////
     //Acciones de los botones.
     private void setActions() {
 
@@ -379,6 +401,8 @@ public class Interfaz extends Application {
                     } else {
                         musica.setDisable(true);
                     }
+                } else {
+                    presentarGanador();
                 }
             }
 
@@ -389,7 +413,7 @@ public class Interfaz extends Application {
         });
 
         volverEmpezar.setOnMouseClicked((MouseEvent event) -> {
-            actualizarDatos(volverEmpezar);
+            nuevoJuego();
         });
 
         actualizarSentido.setOnMouseClicked((MouseEvent event) -> {
@@ -399,9 +423,7 @@ public class Interfaz extends Application {
 
     }
 
-    
     ////////////////////////////////HILO///////////////////////////////////////
-
     public class RunnablePersona implements Runnable {
 
         Persona eliminado = null;
