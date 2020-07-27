@@ -8,7 +8,8 @@ public class Persona {
 
     private String nombre;
     private int numero;
-    Circle circle;
+    private Circle circle;
+    
 
     public Persona(String nombre, int numero,int radio) {
         this.nombre = nombre;

@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -66,13 +67,7 @@ public class Interfaz extends Application {
     private Label mensajeNumeroPersonas;
     private Label confirmarDatos;
 
-    private Media media = new Media(new File("src/recursos/musica.mp3").toURI().toString());
-    private MediaPlayer player = new MediaPlayer(media);
-    private MediaView mv = new MediaView(player);
-
-    private ImageView imageView = new ImageView();
-
-    private Persona ganador;
+    private MediaPlayer player;
 
     ArrayList<Double> ySillas;
     ArrayList<Double> xSillas;
@@ -86,8 +81,6 @@ public class Interfaz extends Application {
         musicaActiva = false;
         cambioSentido = false;
 
-        imageView.setImage(new Image("file:src/recursos/f.gif"));
-
         yPersonas = new ArrayList<>();
         xPersonas = new ArrayList<>();
         ySillas = new ArrayList<>();
@@ -98,12 +91,14 @@ public class Interfaz extends Application {
 
         personasCopia = new ArrayList();
         sillasCopia = new ArrayList();
+        
+        player = new MediaPlayer(new Media(new File("src/recursos/musica.mp3").toURI().toString()));
 
     }
 
     public void start(Stage primaryStage) {
 
-        PanelIzquierdo = new VBox(5);
+        PanelIzquierdo = new VBox(10);
         PanelCentral = new Pane();
         PanelCentral.setPrefSize(750, 600);
 
@@ -137,7 +132,8 @@ public class Interfaz extends Application {
         confirmarDatos = new Label("");
 
         numeroPersonas = new TextField();
-        numeroPersonas.setPrefWidth(200);
+        numeroPersonas.setPrefWidth(275);
+        numeroPersonas.setAlignment(Pos.CENTER);
 
         actualizarSentido = new Button("Actualizar");
         volverEmpezar = new Button("Nuevo Juego");
@@ -161,7 +157,7 @@ public class Interfaz extends Application {
         PanelIzquierdo.getChildren().addAll(enviarDatos, confirmarDatos);
         PanelIzquierdo.getChildren().addAll(musica);
         PanelIzquierdo.getChildren().addAll(volverEmpezar);
-        
+        PanelIzquierdo.setAlignment(Pos.CENTER);
 
     }
 
@@ -180,8 +176,7 @@ public class Interfaz extends Application {
             guardarCopia();
 
         }
-
-        //PanelCentral.getChildren().add(imageView);
+        
         agregarPersonasPanel();
         agregarSillasPanel();
 
@@ -211,7 +206,7 @@ public class Interfaz extends Application {
         Double r2 = xPersonas.removeFirst();
         xPersonas.addLast(r2);
 
-        for (int n = 0; n < personas.size(); n++) {
+        for (int n = 0; n < personas.size(); n++) {         
             personas.get(n).getCircle().setLayoutX(xPersonas.get(n));
             personas.get(n).getCircle().setLayoutY(yPersonas.get(n));
 
@@ -233,7 +228,6 @@ public class Interfaz extends Application {
 
             PanelCentral.getChildren().add(sillas.get(n).getR());
 
-            //root.setCenter(PanelCentral);
         }
     }
 
@@ -296,7 +290,7 @@ public class Interfaz extends Application {
 
     }
 
-    public void nuevoJuego() {
+    public void nuevoJuego() {       
         PanelIzquierdo.getChildren().clear();
         PanelCentral.getChildren().clear();
         rellenarPanelIzquierdo();
@@ -304,8 +298,6 @@ public class Interfaz extends Application {
         juegoActivo = false;
         musicaActiva = false;
         cambioSentido = false;
-
-        imageView.setImage(new Image("file:src/recursos/f.gif"));
 
         yPersonas.clear();
         xPersonas.clear();
@@ -321,6 +313,8 @@ public class Interfaz extends Application {
         actualizarSentido.setDisable(true);
         volverEmpezar.setDisable(true);
         musica.setDisable(true);
+        
+        player = new MediaPlayer(new Media(new File("src/recursos/musica.mp3").toURI().toString()));
     }
 
     public void asignarSillas(Persona persona) {
