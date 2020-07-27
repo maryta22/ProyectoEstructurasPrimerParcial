@@ -305,7 +305,6 @@ public class DobleCircular<E> implements List<E> {
                     dato = n.getData();
                     n = n.getNext();
                 }
-
                 return dato;
             }
 
@@ -333,7 +332,6 @@ public class DobleCircular<E> implements List<E> {
                     dato = p.getData();
                     p = p.getPrevious();
                 }
-
                 return dato;
             }
 

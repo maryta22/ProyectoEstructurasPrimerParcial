@@ -170,7 +170,7 @@ public class ArrayList<E> implements List<E> {
     /*devuelve el elemento en la posicion index del arreglo*/
     @Override
     public E get(int index) throws IndexOutOfBoundsException {
-        if (index >= ocupados) {
+        if (index >= ocupados && index<0) {
             throw new IndexOutOfBoundsException();
         } else {
             return elementos[index];

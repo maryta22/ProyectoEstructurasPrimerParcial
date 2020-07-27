@@ -1,5 +1,6 @@
 package Objetos;
 
+import java.util.Objects;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
@@ -41,6 +42,38 @@ public class Persona {
     public String toString() {
         return nombre;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Persona other = (Persona) obj;
+        if (this.numero != other.numero) {
+            return false;
+        }
+        if (!Objects.equals(this.nombre, other.nombre)) {
+            return false;
+        }
+        if (!Objects.equals(this.circle, other.circle)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
  
 
 }

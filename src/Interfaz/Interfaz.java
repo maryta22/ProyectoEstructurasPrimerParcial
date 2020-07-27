@@ -28,7 +28,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
-import static javafx.scene.paint.Color.BLACK;
 import javafx.stage.Stage;
 
 public class Interfaz extends Application {
@@ -43,15 +42,16 @@ public class Interfaz extends Application {
     private ArrayList<Silla> sillas;
     private DobleCircular<Persona> personas;
 
+    private ArrayList<Silla> sillasCopia;
+    private ArrayList<Persona> personasCopia;
+
     private int numeroDePersonas;
 
     private String sentido;
 
     private Boolean juegoActivo;
-    private Boolean datosListos;
     private Boolean musicaActiva;
     private Boolean cambioSentido;
-    private Boolean nuevoRound;
 
     private VBox PanelIzquierdo;
     private Pane PanelCentral;
@@ -86,10 +86,8 @@ public class Interfaz extends Application {
         PanelCentral.setPrefSize(750, 600);
 
         juegoActivo = false;
-        datosListos = false;
         musicaActiva = false;
         cambioSentido = false;
-        nuevoRound = true;
 
         imageView.setImage(new Image("file:src/recursos/f.gif"));
 
@@ -100,6 +98,9 @@ public class Interfaz extends Application {
 
         sillas = null;
         personas = null;
+
+        personasCopia = new ArrayList();
+        sillasCopia = new ArrayList();
 
     }
 
@@ -162,7 +163,7 @@ public class Interfaz extends Application {
     }
 
     public void rellenarPanelCentral() {
-        
+
         PanelCentral.getChildren().clear();
 
         if (personas == null) {
@@ -172,6 +173,9 @@ public class Interfaz extends Application {
 
             movimientoSillas.rellenarLista(numeroDePersonas - 1);
             movimientoPersonas.rellenarLista(numeroDePersonas);
+
+            guardarCopia();
+
         }
 
         //PanelCentral.getChildren().add(imageView);
@@ -180,18 +184,22 @@ public class Interfaz extends Application {
 
     }
 
+    public void guardarCopia() {
+        sillasCopia = sillas;
+        Iterator<Persona> it = personas.iterador();
+        int contador = 0;
+        while (it.hasNext()) {
+            personasCopia.add(contador, it.next());
+            contador++;
+        }
+    }
+
     public void agregarPersonasPanel() {
 
-        if (yPersonas.isEmpty()|| nuevoRound) {
-            Double f = (2 * Math.PI) / personas.size();
-            for (int h = 0; h < personas.size(); h++) {
-                yPersonas.add(h, 200 * Math.sin(f));
-                xPersonas.add(h, 200 * Math.cos(f));
-                f = f + (2 * Math.PI) / personas.size();
-            }
-            
-            ySillas.clear();
-            xSillas.clear();
+        PanelCentral.getChildren().clear();
+
+        if (yPersonas.isEmpty()) {
+            restPos(personas.size(), xPersonas, yPersonas);
         }
 
         Double r1 = yPersonas.removeFirst();
@@ -201,8 +209,8 @@ public class Interfaz extends Application {
         xPersonas.addLast(r2);
 
         for (int n = 0; n < personas.size(); n++) {
-            personas.get(n).getCircle().setLayoutX(xPersonas.get(n));
-            personas.get(n).getCircle().setLayoutY(yPersonas.get(n));
+            personas.get(n).getCircle().setLayoutX(xPersonas.get(n) * 3 / 4);
+            personas.get(n).getCircle().setLayoutY(yPersonas.get(n) * 3 / 4);
 
             PanelCentral.getChildren().add(personas.get(n).getCircle());
 
@@ -212,34 +220,39 @@ public class Interfaz extends Application {
 
     public void agregarSillasPanel() {
 
-        if (ySillas.isEmpty()|| nuevoRound) {
-            
-            ySillas.clear();
-            xSillas.clear();
-            
-            Double f = (2 * Math.PI) / sillas.size();
-            for (int h = 0; h < sillas.size(); h++) {
-                ySillas.add(h, 200 * Math.sin(f));
-                xSillas.add(h, 200 * Math.cos(f));
-                f = f + (2 * Math.PI) / sillas.size();
-            }
+        if (ySillas.isEmpty()) {
+            restPos(sillas.size(), xSillas, ySillas);
         }
 
         for (int n = 0; n < sillas.size(); n++) {
-
             sillas.get(n).getR().setLayoutX(xSillas.get(n) / 2);
             sillas.get(n).getR().setLayoutY(ySillas.get(n) / 2);
+
             PanelCentral.getChildren().add(sillas.get(n).getR());
 
             //root.setCenter(PanelCentral);
         }
     }
 
+    //Ordena las personas con las sillas en el Panel.
+    public void restPos(int numero, ArrayList<Double> xLista, ArrayList<Double> yLista) {
+
+        xLista.clear();
+        yLista.clear();
+
+        Double f = (2 * Math.PI) / numero;
+        for (int h = 0; h < numero; h++) {
+            yLista.add(h, 200 * Math.sin(f));
+            xLista.add(h, 200 * Math.cos(f));
+            f = f + (2 * Math.PI) / numero;
+        }
+    }
+
+    //crea un hilo con el movimiento de las Personas.
     public void movimientoPersonas() { //Aqui es donde va a suceder la magia
         hiloPersona = new RunnablePersona();  //Comienza el hilo, esto creo que deberia de meterlo en un metodo
         Thread hiloEliminarPersona = new Thread(hiloPersona);
         hiloEliminarPersona.setDaemon(true);
-
         hiloEliminarPersona.start();
 
         volverEmpezar.setDisable(true);
@@ -299,9 +312,9 @@ public class Interfaz extends Application {
                 player.pause();
 
                 hiloPersona.terminar();
+                restPos(personas.size(), xPersonas, yPersonas);
+                restPos(sillas.size(), xSillas, ySillas);
                 volverEmpezar.setDisable(false);
-
-                ganador = hiloPersona.eliminado;
 
             } else {
                 musicaActiva = true;
@@ -340,17 +353,30 @@ public class Interfaz extends Application {
         PanelIzquierdo.getChildren().clear();
     }
 
-    public void juegoTerminado() {
-        ganador = personas.get(0);
-        mostrarGanador(ganador);
+    public void asignarSillas(Persona persona) {
+        PanelCentral.getChildren().clear();
+        for (int n = 0; n < personas.size(); n++) {
+            if (n < sillas.size()) {
+                personas.get(n).getCircle().setLayoutX(xSillas.get(n) / 2);
+                personas.get(n).getCircle().setLayoutY(ySillas.get(n) / 2);
+            } else {
+                personas.get(n).getCircle().setLayoutX(xPersonas.get(n) );
+                personas.get(n).getCircle().setLayoutY(yPersonas.get(n) );
+            }
+
+            PanelCentral.getChildren().add(personas.get(n).getCircle());
+
+        }
+
     }
 
-    public void mostrarGanador(Persona persona) {
-
-    }
-
-    public void mover() {
-
+    public int buscarPersona(Persona persona) {
+        for (int i = 0; i < personas.size(); i++) {
+            if (personas.get(i).equals(persona)) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     public class RunnablePersona implements Runnable {
@@ -361,7 +387,6 @@ public class Interfaz extends Application {
         public void run() {
             try {
                 Iterator<Persona> itePersona;
-
                 if (sentido == "Horario") {
                     itePersona = personas.iterador();
                 } else {
@@ -376,24 +401,25 @@ public class Interfaz extends Application {
                             itePersona = personas.iteradorReverse();
                             cambioSentido = false;
                         }
+
                         eliminado = itePersona.next();
+                        if (eliminado == null) {
+                            eliminado = itePersona.next();
+                        }
                         Platform.runLater(
                                 () -> {
                                     rellenarPanelCentral();
                                 }
                         );
-                        nuevoRound = false;
                         System.out.println(eliminado);
                         Thread.sleep(500);
 
                     }
-                    
+
                 }
 
             } catch (InterruptedException ex) {
                 Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
-            } catch(NullPointerException ex){
-                System.out.println("F");
             }
 
         }
@@ -404,18 +430,17 @@ public class Interfaz extends Application {
                 if (personas.size() == 2) {
                     musica.setDisable(true);
                 }
-                if (eliminado.getNumero() < personas.size()) {
-                    personas.remove(eliminado.getNumero());
-                    sillas.removeLast();
-                } else {
-                    personas.removeLast();
-                    sillas.removeLast();
-                }
+                
+                asignarSillas(eliminado);
+                
+                personas.remove(buscarPersona(eliminado));
+                sillas.remove(buscarPersona(eliminado));
+
                 System.out.println("El eliminado es: " + eliminado.getNumero());
                 System.out.println("Size de personas:" + personas.size());
-                nuevoRound = true;
+
             } catch (NullPointerException excepcion) {
-                System.out.println("Excepcion en terminar()");
+                excepcion.getCause();
 
             }
 
