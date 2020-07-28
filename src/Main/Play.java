@@ -1,7 +1,6 @@
 
 package Main;
 
-import Interfaz.Interfaz;
 import Interfaz.Registro;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -17,8 +16,6 @@ public class Play extends Application {
         Registro.crearArreglos();
         Registro re= new Registro();
         
-//        Interfaz interfaz = new Interfaz();
-//        interfaz.start(primaryStage);
         re.ventanaLogin(primaryStage);
         
     }

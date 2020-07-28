@@ -15,6 +15,7 @@ import java.io.OutputStreamWriter;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -58,6 +59,7 @@ public class Registro {
 
     public void ventanaLogin(Stage primaryStage) {
         GridPane root = new GridPane();
+        root.setAlignment(Pos.CENTER);
 
         lbUserLogin = new Label("USAURIO: ");
         lbPassLogin = new Label("PASSWORD: ");
@@ -89,6 +91,7 @@ public class Registro {
 
         root.setHgap(20);
         root.setVgap(20);
+     
         
         Scene scene = new Scene(root, 500, 400);
         primaryStage.setTitle("Juego de Sillas");
@@ -99,6 +102,8 @@ public class Registro {
 
     public GridPane ventanaRegistro(Stage primaryStage){
         GridPane root = new GridPane();
+        root.setAlignment(Pos.CENTER);
+        
 
         lbUsername = new Label("USERNAME: ");
         lbPassword = new Label("PASSWORD: ");
